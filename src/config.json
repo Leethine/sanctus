@@ -1,6 +1,6 @@
 {
   "mode": "local",                "__f1_comment__": "local/server",
-  "data-directory": "../data",    "__f2_comment__": "or use $DEFAULT_DIR",
+  "data-directory": "../data",    "__f2_comment__": "SOME_DIR or DEFAULT",
   "language": "en",               "__f3_comment__": "",
   "notation-system": "EN",        "__f4_comment__": "EN/LA/DE",
   "engravor": "lilypond",         "__f5_comment__": "",
