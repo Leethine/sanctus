@@ -1,0 +1,5 @@
+{
+  "parent": "data",
+  "children": "['arrangement', 'piece', 'collection', 'template']",
+  "cwd": "$ROOT/metadata"
+}

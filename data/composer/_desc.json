@@ -1,0 +1,5 @@
+{
+  "parent": "data",
+  "children": "['oeuvre', 'info']",
+  "cwd": "$ROOT/composer"
+}

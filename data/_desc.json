@@ -1,0 +1,5 @@
+{
+  "parent": ".",
+  "children": "['score', 'composer', 'metadata']",
+  "cwd": "$ROOT"
+}

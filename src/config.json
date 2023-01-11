@@ -1,0 +1,10 @@
+{
+  "mode": "local",                "__f1_comment__": "local/server",
+  "data-directory": "../data",    "__f2_comment__": "or use $DEFAULT_DIR",
+  "language": "en",               "__f3_comment__": "",
+  "notation-system": "EN",        "__f4_comment__": "EN/LA/DE",
+  "engravor": "lilypond",         "__f5_comment__": "",
+  "version": "2.22.0",            "__f6_comment__": "",
+  "extension": ".ly",             "__f7_comment__": "",
+  "open-with-gui": "frescobaldi", "__f8_comment__": ""
+}
