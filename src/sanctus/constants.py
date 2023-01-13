@@ -9,3 +9,10 @@ DEFAULT_NS = "EN"
 DEFAULT_ENGRAVOR = "lilypond"
 DEFAULT_GUI = "frescobaldi"
 DEFAULT_EXTENTION = ".ly"
+
+DEFAULT_HOST = "sanctus.host"
+DEFAULT_PORT = 9999
+
+ROOTPATH = "$ROOT"
+
+DB_NON_VALID_ERR = -2
