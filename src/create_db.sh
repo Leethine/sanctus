@@ -23,11 +23,13 @@ fi
 if [[ ! -d "${1}" && -f "${1}" ]]; then
   echo "Input Error: '${1}' - file exists"
   exit 1
+
 else # Input argument OK
-  if [ ! -d "${1}" ]; then
-    DATA_DIR="$(realpath "${1}")"
-    RUN_PWD="${PWD}"
-    
+  RUN_PWD="${PWD}"
+  DATA_DIR="$(realpath "${1}")"
+
+  # Creation check
+  if [ ! -d "${DATA_DIR}" ]; then
     echo "Creating DB in ${DATA_DIR} ..."
     read -p "Confirm? [Y/n]"$'\n' -r reply_input
     echo ""
@@ -37,6 +39,7 @@ else # Input argument OK
       echo "Abandoned."
       exit 0
     fi
+  # Override check
   else
     read -p "Directory already exists, override? [Y/n]"$'\n' -r reply_input
     echo ""
@@ -59,7 +62,7 @@ else # Input argument OK
   # Create composer db
   cd composer
   echo "Info: creating subdirectories in ${PWD}"
-  mkdir info oeuvre
+  mkdir info oeuvre icon biography
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
 
   cd info
@@ -67,10 +70,40 @@ else # Input argument OK
   cd ..
 
   cd oeuvre
+  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+  for dir in $(ls -d */); do
+    cd $dir
+    "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+    cd ..
+  done
   cd ..
 
-  cd ../metadata
+  cd icon
+  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
+  "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+  for dir in $(ls -d */); do
+    cd $dir
+    "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+    cd ..
+  done
+  cd ..
+
+  cd biography
+  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
+  "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+  for dir in $(ls -d */); do
+    cd $dir
+    "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
+    cd ..
+  done
+  cd ..
+
+  # go back to root_dir
+  cd ..
+  
+  # Create metadata db
+  cd metadata
   echo "Info: creating subdirectories in ${PWD}"
   mkdir arrangement collection piece template
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
@@ -91,7 +124,10 @@ else # Input argument OK
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
   cd ..
 
-  cd ../score
+  # go back to root dir
+  cd ..
+
+  cd score
   echo "Info: creating subdirectories in ${PWD}"
   mkdir file template
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
