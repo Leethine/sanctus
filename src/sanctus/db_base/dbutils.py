@@ -2,26 +2,73 @@ import os, sys, io, shutil
 import string, json
 import constants
 
+class TextTools():
+  def __init__(self) -> None:
+    pass
+
+  def __do_nothing(self, inputArg):
+    return inputArg
+  
+  def _separateStrFromList(self, inputList: list, targetList: list) -> dict:
+    target = list(filter(lambda x: x in targetList, inputList))
+    filtered = list(filter(lambda x: x not in targetList, inputList))
+    return {"filtered": filtered, "target": target}
+
+  def _filterEmptyStrFromList(self, inputList: list) -> list:
+    return list(filter(lambda x: x != '', inputList))
+  
+  def _filterExtraSpaceFromStr(self, inputStr: str) -> str:
+    tokenized = inputStr.split(' ')
+    filtered = list(filter(lambda x: x != '', tokenized))
+    return ' '.join(filtered)
+
+  def __processListGeneric(self, inputList: list, my_func=__do_nothing) -> list:
+    return [my_func(item) for item in inputList]
+  
+  def __processStrGeneric(self, inputStr: str, my_func=__do_nothing) -> str:
+    tokenized = inputStr.split(' ')
+    processed = [my_func(item) for item in tokenized]
+    filtered = list(filter(lambda x: x != '', processed))
+    return ' '.join(filtered)
+  
+  def _capitalizeList(self, inputList: list) -> list:
+    return self.__processListGeneric(inputList, str.capitalize)
+
+  def _capitalizeStr(self, inputStr: str) -> str:
+    self.__processStrGeneric(inputStr, str.capitalize)
+  
+  def _lowercaseList(self, inputList: list) -> list:
+    return self.__processListGeneric(inputList, str.lower)
+  
+  def _lowercaseStr(self, inputStr: str) -> str:
+    return self.__processStrGeneric(inputStr, str.lower)
+
+
 class DB_Connect():
   def __init__(self, my_db_path=constants.DEFAULT_LOCAL_DB_DIR) -> None:
     self.DB_ROOT = os.path.abspath(my_db_path)
-    if not self.checkDBStructure(self.DB_ROOT):
+    if not self._checkDBStructure(self.DB_ROOT):
       print("DB structure is invalid, please recreate DB, or check your path")
       exit(constants.DB_NON_VALID_ERR)
 
-  def checkDBStructure(self, dbpath_to_check: str) -> bool:
+  def _checkDBStructure(self, dbpath_to_check: str) -> bool:
     dbpath = os.path.abspath(dbpath_to_check)
 
     check = 1
     check *= os.path.exists(dbpath + "/_desc.json")
-    
+
     # composer
     check *= os.path.exists(dbpath + "/composer/_desc.json")
     check *= os.path.exists(dbpath + "/composer/info/_desc.json")
     check *= os.path.exists(dbpath + "/composer/oeuvre/_desc.json")
-    file_dir = list(string.ascii_lowercase)
-    for dir in file_dir:
-      check *= os.path.exists(dbpath + "/composer/info/" + dir + "/_desc.json")
+    check *= os.path.exists(dbpath + "/composer/icon/_desc.json")
+    check *= os.path.exists(dbpath + "/composer/biography/_desc.json")
+    familyname_initial = list(string.ascii_lowercase)
+    for initial in familyname_initial:
+      dir = constants.COMPOSER_NAME_PARTITION_MAP[initial]
+      check *= os.path.exists(dbpath + "/composer/icon/" + dir + "/_desc.json")
+      check *= os.path.exists(dbpath + "/composer/biography/" + dir + "/_desc.json")
+      check *= os.path.exists(dbpath + "/composer/oeuvre/" + dir + "/_desc.json")
     
     # metadata
     check *= os.path.exists(dbpath + "/metadata/_desc.json")
@@ -44,11 +91,12 @@ class DB_Connect():
     return self.DB_ROOT
   
   def resetDBPath(self, my_db_path) -> None:
-    if self.checkDBStructure(my_db_path):
+    if self._checkDBStructure(my_db_path):
       self.DB_ROOT = my_db_path
     else:
       print("DB structure not validated, DB path not changed")
       print("Please create your DB first")
+
 
 class File_IO(DB_Connect):
   def __init__(self, db_root=constants.DEFAULT_LOCAL_DB_DIR) -> None:
@@ -88,14 +136,14 @@ class File_IO(DB_Connect):
   def writeRawJsonFile(self, jsonobj: dict, fpath: str, indent=None) -> None:
     try:
       with open(fpath, "w") as f:
-        json.dump(jsonobj, f, indent=2)
+        json.dump(jsonobj, f, indent=indent)
     except ValueError as e:
       print("writeJsonFile(): Error writing {}: {}".format(fpath, e))
   
   def writeRawJsonFile(self, jsonobj: list, fpath: str, indent=None) -> None:
     try:
       with open(fpath, "w") as f:
-        json.dump(jsonobj, f, indent=2)
+        json.dump(jsonobj, f, indent=indent)
     except ValueError as e:
       print("writeJsonFile(): Error writing {}: {}".format(fpath, e))
 

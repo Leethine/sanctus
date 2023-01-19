@@ -70,7 +70,7 @@ else # Input argument OK
   cd ..
 
   cd oeuvre
-  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
+  mkdir ac b def ghij kl mnopq rtuvwxyz s
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
   for dir in $(ls -d */); do
     cd $dir
@@ -80,7 +80,7 @@ else # Input argument OK
   cd ..
 
   cd icon
-  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
+  mkdir ac b def ghij kl mnopq rtuvwxyz s
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
   for dir in $(ls -d */); do
     cd $dir
@@ -90,7 +90,7 @@ else # Input argument OK
   cd ..
 
   cd biography
-  mkdir a b c d e f g h i j k l m n o p q r s t u v w x y z
+  mkdir ac b def ghij kl mnopq rtuvwxyz s
   "${RUN_PWD}"/create_db_desc.py "${PWD}" "${DATA_DIR}"
   for dir in $(ls -d */); do
     cd $dir
