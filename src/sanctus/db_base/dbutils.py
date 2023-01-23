@@ -51,6 +51,12 @@ class DB_Connect():
       print("DB structure is invalid, please recreate DB, or check your path")
       exit(constants.DB_NON_VALID_ERR)
 
+  def _checkDirectory(self) -> bool:
+    if self.getCWD() == os.path.abspath(os.path.curdir):
+      return True
+    else:
+      return False
+
   def _checkDBStructure(self, dbpath_to_check: str) -> bool:
     dbpath = os.path.abspath(dbpath_to_check)
 

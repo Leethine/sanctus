@@ -5,39 +5,14 @@ from db_base.dbutils import File_IO, TextTools
 class Metadata_IO(File_IO, TextTools):
   def __init__(self, db_root=constants.DEFAULT_LOCAL_DB_DIR) -> None:
     super().__init__(db_root)
-    self.ARRANGEMENT_DIR = "arrangement/"
-    self.COLLECTION_DIR = "collection/"
-    self.PIECE_DIR = "piece/"
-    self.TEMPLATE_DIR = "template/"
-    self.ACTIVATED = False
-
-  def activate(self) -> None:
-    self._chdirToMetadataDir()
-    self.ACTIVATED = True
-  
-  def deactivate(self) -> None:
-    if self.ACTIVATED:
-      os.chdir('..')
-      self.ACTIVATED = False
-    else:
-      pass
-
-  def _checkDirectory(self) -> bool:
-    if self.getCWD() == os.path.abspath(os.path.curdir):
-      return True
-    else:
-      return False
-  
-  def _chdirToMetadataDir(self) -> None:
-    try:
-      if self._checkDirectory():
-        os.chdir("metadata")
-      else:
-        raise Exception("_chdirToMetadataDir(): Error: " + self.DB_ROOT)
-    except RuntimeError as e:
-      print("_chdirToMetadataDir(): runtime error {}".format(e))
-    except Exception as excp:
-      print(excp)
+    self._METADATA_ROOT = "metadata/" 
+    self._ARRANGEMENT_DIR = self._METADATA_ROOT + "arrangement/"
+    self._COLLECTION_DIR = self._METADATA_ROOT + "collection/"
+    self._PIECE_DIR = self._METADATA_ROOT + "piece/"
+    self._TEMPLATE_DIR = self._METADATA_ROOT + "template/"
+    if not self._checkDirectory():
+      print("[WARNING] Metadata directory invalid")
+      raise("Directory invalid")
 
   def _getRandomHash(self) -> str:
     m = hashlib.sha1()
@@ -147,19 +122,19 @@ class Metadata_IO(File_IO, TextTools):
 
       if type_of_work.lower() == "piece":
         entry = self._createPieceDict()
-        json_filename = self.PIECE_DIR + first_letter + self.JSON_EXTENTION
+        json_filename = self._PIECE_DIR + first_letter + self.JSON_EXTENTION
         
       elif type_of_work.lower() == "arrangement":
         entry = self._createArrangementDict()
-        json_filename = self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION
+        json_filename = self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION
 
       elif type_of_work.lower() == "collection":
         entry = self._createCollectionDict()
-        json_filename = self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION
+        json_filename = self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION
 
       elif type_of_work.lower() == "template":
         entry = self._createTemplateDict()
-        json_filename = self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+        json_filename = self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
       
       else:
         print("[INFO] Cannot create invalid type \"{}\"".format(type_of_work))
@@ -195,10 +170,10 @@ class Metadata_IO(File_IO, TextTools):
   def deleteItem(self, hashcode='0') -> bool:
     first_letter = hashcode[0]
     filenames = [
-      self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-      self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-      self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-      self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+      self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+      self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+      self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+      self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
     ]
 
     try:
@@ -225,10 +200,10 @@ class Metadata_IO(File_IO, TextTools):
   def updateItem(self, hashcode='0', dkey='', new_val='') -> bool:
     first_letter = hashcode[0]
     filenames = [
-      self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-      self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-      self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-      self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+      self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+      self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+      self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+      self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
     ]
 
     try:
@@ -257,7 +232,7 @@ class Metadata_IO(File_IO, TextTools):
 
   def addWorkInCollection(self, coll_hashcode='0', new_work_hash='') -> bool:
     try:
-      filename = self.COLLECTION_DIR + coll_hashcode[0] + self.JSON_EXTENTION
+      filename = self._COLLECTION_DIR + coll_hashcode[0] + self.JSON_EXTENTION
       if os.path.exists(filename):
         entry = self.readJsonFileAsObj(filename)
         for item in entry:
@@ -289,10 +264,10 @@ class Metadata_IO(File_IO, TextTools):
       for first_letter in self._getAllMetadataJsonFileName():
         # obtain list of possible filenames
         filenames = [
-          self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-          self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-          self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-          self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+          self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+          self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+          self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+          self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
         ]
         for fn in filenames:
           if os.path.exists(fn):
@@ -321,10 +296,10 @@ class Metadata_IO(File_IO, TextTools):
       for first_letter in self._getAllMetadataJsonFileName():
         # obtain list of possible filenames
         filenames = [
-          self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-          self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-          self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-          self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+          self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+          self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+          self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+          self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
         ]
         for fn in filenames:
           if os.path.exists(fn):
@@ -349,10 +324,10 @@ class Metadata_IO(File_IO, TextTools):
       for first_letter in self._getAllMetadataJsonFileName():
         # obtain list of possible filenames
         filenames = [
-          self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-          self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-          self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-          self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+          self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+          self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+          self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+          self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
         ]
         for fn in filenames:
           if os.path.exists(fn):
@@ -377,10 +352,10 @@ class Metadata_IO(File_IO, TextTools):
       for first_letter in self._getAllMetadataJsonFileName():
         # obtain list of possible filenames
         filenames = [
-          self.PIECE_DIR + first_letter + self.JSON_EXTENTION, 
-          self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
-          self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
-          self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+          self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
+          self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION,
+          self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
+          self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
         ]
         for fn in filenames:
           if os.path.exists(fn):
@@ -405,13 +380,13 @@ class Metadata_IO(File_IO, TextTools):
       for first_letter in self._getAllMetadataJsonFileName():
         # get filename based on the input
         if type_of_work.lower() == "piece":
-          filename = self.PIECE_DIR + first_letter + self.JSON_EXTENTION
+          filename = self._PIECE_DIR + first_letter + self.JSON_EXTENTION
         elif type_of_work.lower() == "collection":
-          filename = self.COLLECTION_DIR + first_letter + self.JSON_EXTENTION
+          filename = self._COLLECTION_DIR + first_letter + self.JSON_EXTENTION
         elif type_of_work.lower() == "template":
-          filename = self.TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
+          filename = self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
         elif type_of_work.lower() == "arrangement":
-          filename = self.ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION
+          filename = self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION
         else:
           filename = "unknown" + self.JSON_EXTENTION
 

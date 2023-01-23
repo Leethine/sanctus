@@ -5,39 +5,14 @@ from db_base.dbutils import File_IO, TextTools
 class Composer_IO(File_IO, TextTools):
   def __init__(self, db_root=constants.DEFAULT_LOCAL_DB_DIR) -> None:
     super().__init__(db_root)
-    self.INFO_DIR = "info/"
-    self.OEUVRE_DIR = "oeuvre/"
-    self.ICON_DIR = "icon/"
-    self.BIOG_DIR = "biography/"
-    self.ACTIVATED = False
-  
-  def activate(self) -> None:
-    self._chdirToComposerDir()
-    self.ACTIVATED = True
-  
-  def deactivate(self) -> None:
-    if self.ACTIVATED:
-      os.chdir('..')
-      self.ACTIVATED = False
-    else:
-      pass
-
-  def _checkDirectory(self) -> bool:
-    if self.getCWD() == os.path.abspath(os.path.curdir):
-      return True
-    else:
-      return False
-  
-  def _chdirToComposerDir(self) -> None:
-    try:
-      if self._checkDirectory():
-        os.chdir("composer")
-      else:
-        raise Exception("_chdirToComposerDir(): Error: " + self.DB_ROOT)
-    except RuntimeError as e:
-      print("_chdirToComposerDir(): runtime error {}".format(e))
-    except Exception as excp:
-      print(excp)
+    self._COMPOSER_ROOT = "composer/"
+    self._INFO_DIR = self._COMPOSER_ROOT + "info/"
+    self._OEUVRE_DIR = self._COMPOSER_ROOT + "oeuvre/"
+    self._ICON_DIR = self._COMPOSER_ROOT + "icon/"
+    self._BIOG_DIR = self._COMPOSER_ROOT +"biography/"
+    if not self._checkDirectory():
+      print("[WARNING] Composer directory invalid")
+      raise("Directory invalid")
 
   def _filterNameParticle(self, family_name_list: list) -> dict:
     try:
@@ -220,14 +195,14 @@ class Composer_IO(File_IO, TextTools):
 
   def _getPartitionFilePath(self, name_code: str) -> str:
     if len(name_code) != 0:
-      return self.INFO_DIR \
+      return self._INFO_DIR \
       + constants.COMPOSER_NAME_PARTITION_MAP[name_code[0]] \
       + self.JSON_EXTENTION
     else:
       raise Exception("Exception: NameCode is empty.")
   
   def _getAllInfoJsonFilePath(self) -> list:
-    list_files = os.listdir(self.INFO_DIR)
+    list_files = os.listdir(self._INFO_DIR)
     list_json = []
     for f in list_files:
       if f.split(".")[-1] != "json":
@@ -331,7 +306,7 @@ class Composer_IO(File_IO, TextTools):
       name_list = self._capitalizeList(name_list)
       result = []
       for jsonfile in self._getAllInfoJsonFilePath():
-        for item in self.readJsonFileAsObj(self.INFO_DIR + jsonfile):
+        for item in self.readJsonFileAsObj(self._INFO_DIR + jsonfile):
           matched = False
           candidate = item["GivenNameList"] + item["FamilyNameList"]
           for name in name_list:
@@ -369,7 +344,7 @@ class Composer_IO(File_IO, TextTools):
         to_year = int(to_year)
 
       for jsonfile in self._getAllInfoJsonFilePath():
-        for item in self.readJsonFileAsObj(self.INFO_DIR + jsonfile):
+        for item in self.readJsonFileAsObj(self._INFO_DIR + jsonfile):
           if item["Born"].isnumeric() and item["Dead"].isnumeric():
             candidate_year = int(item[year_type])
             
@@ -437,7 +412,7 @@ class Composer_IO(File_IO, TextTools):
   def deleteComposerForce(self, name_code: str) -> bool:
     try:
       for jsonfile in self._getAllInfoJsonFilePath():
-        curr_fpath = self.INFO_DIR + jsonfile
+        curr_fpath = self._INFO_DIR + jsonfile
         curr_jsonobj = self.readJsonFileAsObj(curr_fpath)
         for item in curr_jsonobj:
           if item["NameCode"] == name_code:
