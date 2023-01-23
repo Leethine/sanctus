@@ -421,6 +421,7 @@ class Composer_IO(File_IO, TextTools):
 
         # finish writing, move file
         self.fmoveReplace(jsonfile_path + "~", jsonfile_path)
+        print("[INFO] Created {}".format(entry["NameCode"]))
         return True
       else:
         pass #TODO handle name conflict
@@ -431,5 +432,66 @@ class Composer_IO(File_IO, TextTools):
       return False
     except Exception as excp:
       print("createComposerEntry(): Exception: {}".format(excp))
+      return False
+
+  def deleteComposerForce(self, name_code: str) -> bool:
+    try:
+      for jsonfile in self._getAllInfoJsonFilePath():
+        curr_fpath = self.INFO_DIR + jsonfile
+        curr_jsonobj = self.readJsonFileAsObj(curr_fpath)
+        for item in curr_jsonobj:
+          if item["NameCode"] == name_code:
+            curr_jsonobj.remove(item)
+            # write to new file, then replace json file
+            new_fpath = curr_fpath + "~"
+            self.writeJsonFile(curr_jsonobj, new_fpath)
+            self.fmoveReplace(new_fpath, curr_fpath)
+            print("[INFO] Removed {}".format(name_code))
+    except RuntimeError as e:
+      print("removeComposerForce(): Error: {}".format(e))
+      return False
+    except Exception as excp:
+      print("removeComposerForce(): Exception: {}".format(excp))
+      return False
+      
+  def deleteComposer(self, name_code: str) -> bool:
+    try:
+      query = self.queryByNameCode(name_code)
+      if not query:
+        return False
+      elif len(query) > 1:
+        raise Exception("Multiple composers with the same NameCode exists in DB: {}".format(name_code))
+      else:
+        self.deleteComposerForce(name_code)
+    except RuntimeError as e:
+      print("removeComposer(): Error: {}".format(e))
+      return False
+    except Exception as excp:
+      print("removeComposer(): Exception: {}".format(excp))
+      return False
+
+  def updateComposerEntry(self, name_code: str, dkey: str, new_val) -> bool:
+    try:
+      query = self.queryByNameCode(name_code)
+      if not query:
+        return False
+      elif len(query) > 1:
+        raise Exception("Multiple composers with the same NameCode exists in DB: {}".format(name_code))
+      else:
+        entry = query[0]
+        if dkey not in entry.keys():
+          raise Exception("updateComposerEntry(): {} is not a valid key".format(dkey))
+        # only allow updating "safe" keys
+        elif dkey not in ['KnownAs', 'Style', 'wikiLink']:
+          raise Exception("Key \"{}\" is protected, cannot be updated".format(dkey))
+        else:
+          entry[dkey] = new_val
+          print("[INFO] Updated {}: {} = {}".format(name_code, dkey, new_val))
+          return True
+    except RuntimeError as e:
+      print("updateComposerEntry(): Error: {}".format(e))
+      return False
+    except Exception as excp:
+      print("updateComposerEntry(): Exception: {}".format(excp))
       return False
     

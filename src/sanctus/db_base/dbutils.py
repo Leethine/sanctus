@@ -81,7 +81,8 @@ class DB_Connect():
     check *= os.path.exists(dbpath + "/score/_desc.json")
     check *= os.path.exists(dbpath + "/score/template/_desc.json")
     check *= os.path.exists(dbpath + "/score/file/_desc.json")
-    file_dir = list(string.digits + string.ascii_lowercase)
+    #file_dir = list(string.digits + string.ascii_lowercase)
+    file_dir = list(string.digits + "abcdef")
     for dir in file_dir:
       check *= os.path.exists(dbpath + "/score/file/" + dir + "/_desc.json")
     
