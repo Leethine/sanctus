@@ -61,36 +61,25 @@ class DB_Connect():
     dbpath = os.path.abspath(dbpath_to_check)
 
     check = 1
-    check *= os.path.exists(dbpath + "/_desc.json")
 
     # composer
-    check *= os.path.exists(dbpath + "/composer/_desc.json")
-    check *= os.path.exists(dbpath + "/composer/info/_desc.json")
-    check *= os.path.exists(dbpath + "/composer/oeuvre/_desc.json")
-    check *= os.path.exists(dbpath + "/composer/icon/_desc.json")
-    check *= os.path.exists(dbpath + "/composer/biography/_desc.json")
-    familyname_initial = list(string.ascii_lowercase)
-    for initial in familyname_initial:
-      dir = constants.COMPOSER_NAME_PARTITION_MAP[initial]
-      check *= os.path.exists(dbpath + "/composer/icon/" + dir + "/_desc.json")
-      check *= os.path.exists(dbpath + "/composer/biography/" + dir + "/_desc.json")
-      check *= os.path.exists(dbpath + "/composer/oeuvre/" + dir + "/_desc.json")
+    check *= os.path.exists(dbpath + "/composer")
+    check *= os.path.exists(dbpath + "/composer/info")
+    check *= os.path.exists(dbpath + "/composer/icon")
+    check *= os.path.exists(dbpath + "/composer/biography")
     
     # metadata
-    check *= os.path.exists(dbpath + "/metadata/_desc.json")
-    check *= os.path.exists(dbpath + "/metadata/arrangement/_desc.json")
-    check *= os.path.exists(dbpath + "/metadata/collection/_desc.json")
-    check *= os.path.exists(dbpath + "/metadata/piece/_desc.json")
-    check *= os.path.exists(dbpath + "/metadata/template/_desc.json")
+    check *= os.path.exists(dbpath + "/metadata")
+    check *= os.path.exists(dbpath + "/metadata/arrangement")
+    check *= os.path.exists(dbpath + "/metadata/collection")
+    check *= os.path.exists(dbpath + "/metadata/piece")
+    check *= os.path.exists(dbpath + "/metadata/template")
     
     # score
-    check *= os.path.exists(dbpath + "/score/_desc.json")
-    check *= os.path.exists(dbpath + "/score/template/_desc.json")
-    check *= os.path.exists(dbpath + "/score/file/_desc.json")
-    #file_dir = list(string.digits + string.ascii_lowercase)
+    check *= os.path.exists(dbpath + "/score")
     file_dir = list(string.digits + "abcdef")
     for dir in file_dir:
-      check *= os.path.exists(dbpath + "/score/file/" + dir + "/_desc.json")
+      check *= os.path.exists(dbpath + "/score/" + dir)
     
     return bool(check)
   

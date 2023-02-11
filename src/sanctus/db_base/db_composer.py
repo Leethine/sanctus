@@ -7,7 +7,6 @@ class Composer_IO(File_IO, TextTools):
     super().__init__(db_root)
     self._COMPOSER_ROOT = "composer/"
     self._INFO_DIR = self._COMPOSER_ROOT + "info/"
-    self._OEUVRE_DIR = self._COMPOSER_ROOT + "oeuvre/"
     self._ICON_DIR = self._COMPOSER_ROOT + "icon/"
     self._BIOG_DIR = self._COMPOSER_ROOT +"biography/"
     if not self._checkDirectory():

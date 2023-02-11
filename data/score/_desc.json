@@ -1,5 +1,0 @@
-{
-  "parent": "data",
-  "children": "['template', 'file']",
-  "cwd": "$ROOT/score"
-}
