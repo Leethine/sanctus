@@ -1,6 +1,6 @@
 import os, sys, io, shutil
 import string, json
-import constants
+import sanctus.constants as constants
 
 class TextTools():
   def __init__(self) -> None:
