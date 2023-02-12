@@ -1,4 +1,7 @@
 __pycache__/
 __test_db/
+__testdb/
+__dbtest/
+__db_test/
 
 *.log
