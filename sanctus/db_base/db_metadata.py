@@ -334,7 +334,10 @@ class Metadata_IO(File_IO, TextTools):
             jsonobj = self.readJsonFileAsObj(fn)
             for item in jsonobj:
               if "Opus" in item.keys():
-                if opus.lower() in item["Opus"].lower():
+                # preprocess opus system and opus number
+                opus_query = opus.lower().replace(".","").replace(" ","").replace("opus","op")
+                opus_target = item["Opus"].lower().replace(".","").replace(" ","").replace("opus","op")
+                if opus_query in opus_target:
                   result.append(item)
       return result
 
