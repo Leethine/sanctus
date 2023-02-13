@@ -1,18 +1,7 @@
 import os
-
-try:
-  from db_composer import Composer_IO
-  from db_metadata import Metadata_IO
-  from db_score import Score_IO
-except:
-  pass
-
-try:
-  from db_base.db_composer import Composer_IO
-  from db_base.db_metadata import Metadata_IO
-  from db_base.db_score import Score_IO
-except:
-  pass
+from db_base.db_composer import Composer_IO
+from db_base.db_metadata import Metadata_IO
+from db_base.db_score import Score_IO
 
 """
 find composer [fmlyname, abbrname, year]
