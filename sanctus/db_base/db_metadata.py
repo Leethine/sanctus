@@ -86,7 +86,6 @@ class Metadata_IO(File_IO, TextTools):
       raise("Cannot update protected key \"Type\"")
     elif dkey in entry.keys():
       entry[dkey] = new_val
-      #print("[INFO] Updated {} = {}".format(dkey, new_val))
     else:
       raise("Key \"{}\" not available".format(dkey))
     return entry
@@ -112,8 +111,8 @@ class Metadata_IO(File_IO, TextTools):
       entry["PieceHash"].append(new_work_hash)
     return entry
 
-  def createItem(self, type_of_work: str, title='', subtitle='',
-                 subsubtitle='', composercode='', opus='') -> bool:
+  def createItem(self, type_of_work: str, title='', subtitle='', subsubtitle='',
+                 composercode='', opus='', instruments=[]) -> bool:
     try:
       item_hash = self._getRandomHash()
       first_letter = item_hash[0]
@@ -147,6 +146,7 @@ class Metadata_IO(File_IO, TextTools):
       entry = self._updateEntry(entry, dkey="ComposerNameCode", new_val=composercode)
       entry = self._updateEntry(entry, dkey="Opus", new_val=opus)
       entry = self._updateEntry(entry, dkey="Hash", new_val=item_hash)
+      entry = self._addUpdateEntry(entry, dkey="Instruments", new_val=instruments)
 
       if os.path.exists(json_filename):
         jsonobj = self.readJsonFileAsObj(json_filename)
@@ -156,6 +156,7 @@ class Metadata_IO(File_IO, TextTools):
       else:
         self.writeJsonFile([entry], json_filename)
       
+      print("[INFO] Created {}: {}".format(type_of_work, item_hash))
       return True
     
     except RuntimeError as e:
@@ -273,12 +274,12 @@ class Metadata_IO(File_IO, TextTools):
           if os.path.exists(fn):
             jsonobj = self.readJsonFileAsObj(fn)
             for item in jsonobj:
-              # make sure key is in  dict
-              if "Title" in item.keys() and "Subitle" in item.keys() \
+              # make sure key is in dict
+              if "Title" in item.keys() and "Subtitle" in item.keys() \
                 and "Subsubtitle" in item.keys():
                 # lower case search in title; subtitle and subsubtitle
                 if title.lower() in item["Title"].lower() \
-                  or title.lower() in item["Subitle"].lower() \
+                  or title.lower() in item["Subtitle"].lower() \
                   or title.lower() in item["Subsubtitle"].lower():
                   result.append(item)
       return result
