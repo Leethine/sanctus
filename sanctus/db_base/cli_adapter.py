@@ -195,15 +195,17 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
   def updateComposer(self, name_code: str, dkey: str, new_val) -> bool:
     try:
       if dkey == "Style":
-        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
-        newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
-        return self.__c.updateComposerEntry(name_code=name_code, dkey=dkey, new_val=newval_list)
-      
+        if type(new_val) == list:
+          return self.__c.updateComposerEntry(name_code=name_code, dkey=dkey, new_val=new_val)
+        else:
+          newval_list = str(new_val).replace(","," ").replace("-"," ").split(" ")
+          newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
+          return self.__c.updateComposerEntry(name_code=name_code, dkey=dkey, new_val=newval_list)
       elif dkey == "Born":
         year = str(int(new_val))
         entry = self.__c.queryByNameCode(name_code)[0]
         status = self.__c.deleteComposerForce(name_code)
-        self.createComposerEntry(
+        return self.createComposerEntry(
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=year,
@@ -217,7 +219,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
         year = str(int(new_val))
         entry = self.__c.queryByNameCode(name_code)[0]
         status = self.__c.deleteComposerForce(name_code)
-        self.createComposerEntry(
+        return self.createComposerEntry(
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=entry["Born"],
@@ -228,9 +230,9 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           imlsp_link=entry["imslpLink"]
         )
       elif dkey == "FamilyNameList":
-        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
+        newval_list = str(new_val).replace(","," ").replace("-"," ").split(" ")
         newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
-        self.createComposerEntry(
+        return self.createComposerEntry(
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+newval_list,
           born_year=entry["Born"],
@@ -241,9 +243,9 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           imlsp_link=entry["imslpLink"]
         )
       elif dkey == "FamilyNameParticle":
-        self.createComposerEntry(
+        return self.createComposerEntry(
           given_name=entry["GivenNameList"],
-          family_name=[new_val.lower()]+entry["FamilyNameList"],
+          family_name=[str(new_val).lower()]+entry["FamilyNameList"],
           born_year=entry["Born"],
           died_year=year,
           known_name=entry["KnownAs"],
@@ -252,9 +254,9 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           imlsp_link=entry["imslpLink"]
         )
       elif dkey == "GivenNameList":
-        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
+        newval_list = str(new_val).replace(","," ").replace("-"," ").split(" ")
         newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
-        self.createComposerEntry(
+        return self.createComposerEntry(
           given_name=newval_list,
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=entry["Born"],
@@ -267,7 +269,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       elif dkey == "NameCode" or dkey == "NameCodeStrong":
         raise Exception("update forbidden on \"NameCode\"")
       else:
-        return self.__c.updateComposerEntryAddKey(name_code=name_code, dkey=dkey, new_val=year)
+        return self.__c.updateComposerEntryAddKey(name_code=name_code, dkey=dkey, new_val=str(new_val))
       
     except RuntimeError as e:
       print("updateComposer(): Error - {}".format(e))
@@ -276,10 +278,18 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
     return False
   
   def updateWork(self, hashcode: str, dkey: str, new_val) -> bool:
-    new_value = new_val
+    new_value = str(new_val)
     if dkey == "Instruments":
-      new_val_list = new_val.replace(","," ").replace("."," ").split(" ")
-      new_value = self._capitalizeList(self._filterEmptyStrFromList(new_val_list))
+      if type(new_val) == list:
+        pass
+      else:
+        new_val_list = str(new_val).replace(","," ").replace("."," ").split(" ")
+        new_value = self._capitalizeList(self._filterEmptyStrFromList(new_val_list))
+    elif dkey == "Hash":
+      print("[Error] <updateWork> \"Hash\" update is forbidden")
+      return False
+    else:
+      pass
     
     return self.__m.updateItem(hashcode=hashcode, dkey=dkey, new_val=new_value, addkey=True)
 
