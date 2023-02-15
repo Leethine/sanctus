@@ -3,7 +3,7 @@ import sanctus.constants as constants
 from sanctus.db_base.dbutils import File_IO, TextTools
 
 class Composer_IO(File_IO, TextTools):
-  def __init__(self, db_root=constants.DEFAULT_LOCAL_DB_DIR) -> None:
+  def __init__(self, db_root=constants.DEFAULT_DB_DIR_PATH) -> None:
     super().__init__(db_root)
     self._COMPOSER_ROOT = "composer/"
     self._INFO_DIR = self._COMPOSER_ROOT + "info/"

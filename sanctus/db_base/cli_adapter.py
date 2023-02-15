@@ -1,4 +1,5 @@
 import os
+from constants import DEFAULT_DB_DIR_PATH
 from sanctus.db_base.db_composer import Composer_IO
 from sanctus.db_base.db_metadata import Metadata_IO
 from sanctus.db_base.db_score import Score_IO
@@ -25,7 +26,7 @@ class DataBaseCliAdapterAbs:
     pass
 
 class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
-  def __init__(self, dbpath='~/') -> None:
+  def __init__(self, dbpath=DEFAULT_DB_DIR_PATH) -> None:
     self.__c = Composer_IO(dbpath)
     self.__m = Metadata_IO(dbpath)
     self.__s = Score_IO(dbpath)

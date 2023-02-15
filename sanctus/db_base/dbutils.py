@@ -45,7 +45,7 @@ class TextTools():
 
 
 class DB_Connect():
-  def __init__(self, my_db_path=constants.DEFAULT_LOCAL_DB_DIR) -> None:
+  def __init__(self, my_db_path=constants.DEFAULT_DB_DIR_PATH) -> None:
     self.DB_ROOT = os.path.abspath(my_db_path)
     if not self._checkDBStructure(self.DB_ROOT):
       print("DB structure is invalid, please recreate DB, or check your path")
