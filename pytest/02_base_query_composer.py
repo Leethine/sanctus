@@ -29,6 +29,6 @@ print("queryByBornYearRange - \"1582 - 1584\":")
 print(cio.queryByBornYearRange(1582, 1584)[0]["FullName"])
 print("")
 
-print("queryByDeadYearRange - \"1790 - 1792\":")
-print(cio.queryByDeadYearRange(1790, 1792)[0]["FullName"])
+print("queryByDiedYearRange - \"1790 - 1792\":")
+print(cio.queryByDiedYearRange(1790, 1792)[0]["FullName"])
 print("")

@@ -53,7 +53,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       year_end = str(int(year_end))
       
       result1 = self.__c._queryByYearRange(year_begin, year_end, year_type="Born")
-      result2 = self.__c._queryByYearRange(year_begin, year_end, year_type="Dead")
+      result2 = self.__c._queryByYearRange(year_begin, year_end, year_type="Died")
       
       result = []
       # iterate on the longer one, in order to get the overlap
@@ -158,7 +158,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
                   given_name_list: list,
                   family_name_list: list,
                   born_year: str,
-                  dead_year: str,
+                  died_year: str,
                   known_as_name: str,
                   style: list,
                   wiki_link: str,
@@ -167,7 +167,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       given_name=given_name_list, 
       family_name=family_name_list,
       born_year=born_year,
-      dead_year=dead_year,
+      died_year=died_year,
       known_name=known_as_name,
       style=style,
       wiki_link=wiki_link,
@@ -207,13 +207,13 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=year,
-          dead_year=entry["Dead"],
+          died_year=entry["Died"],
           known_name=entry["KnownAs"],
           style=entry["Style"],
           wiki_link=entry["wikiLink"],
           imlsp_link=entry["imslpLink"]
         )
-      elif dkey == "Dead":
+      elif dkey == "Died":
         year = str(int(new_val))
         entry = self.__c.queryByNameCode(name_code)[0]
         status = self.__c.deleteComposerForce(name_code)
@@ -221,7 +221,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=entry["Born"],
-          dead_year=year,
+          died_year=year,
           known_name=entry["KnownAs"],
           style=entry["Style"],
           wiki_link=entry["wikiLink"],
@@ -234,7 +234,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           given_name=entry["GivenNameList"],
           family_name=entry["FamilyNameParticle"]+newval_list,
           born_year=entry["Born"],
-          dead_year=year,
+          died_year=year,
           known_name=entry["KnownAs"],
           style=entry["Style"],
           wiki_link=entry["wikiLink"],
@@ -245,7 +245,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           given_name=entry["GivenNameList"],
           family_name=[new_val.lower()]+entry["FamilyNameList"],
           born_year=entry["Born"],
-          dead_year=year,
+          died_year=year,
           known_name=entry["KnownAs"],
           style=entry["Style"],
           wiki_link=entry["wikiLink"],
@@ -258,7 +258,7 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
           given_name=newval_list,
           family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
           born_year=entry["Born"],
-          dead_year=year,
+          died_year=year,
           known_name=entry["KnownAs"],
           style=entry["Style"],
           wiki_link=entry["wikiLink"],

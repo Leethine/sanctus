@@ -74,26 +74,26 @@ class Composer_IO(File_IO, TextTools):
       print("_compNameCode(): Error: {}".format(e))
       return ""
   
-  def _compYearHash(self, born_year='?', dead_year='?') -> int:
+  def _compYearHash(self, born_year='?', died_year='?') -> int:
     born = str(born_year)
-    dead = str(dead_year)
+    died = str(died_year)
     
     if not born.isnumeric() or not len(born) == 4:
       born = int(1516)
     else:
       born = int(born_year)
     
-    if not dead.isnumeric() or not len(dead) == 4:
-      dead = int(2021)
+    if not died.isnumeric() or not len(died) == 4:
+      died = int(2021)
     else:
-      dead = int(dead_year)
+      died = int(died_year)
     
-    if born < 100 or dead < 100:
+    if born < 100 or died < 100:
       born = int(1516)
-      dead = int(2021)
+      died = int(2021)
     
     # calculate the hash
-    return (born + dead) % int((born / 100))
+    return (born + died) % int((born / 100))
 
   def _createNewInfoDict(self, given_name_input: list, family_name_input: list) -> dict:
     try:
@@ -137,7 +137,7 @@ class Composer_IO(File_IO, TextTools):
         "NameCode": namecode,
         "NameCodeStrong": namecode,
         "Born": "?",
-        "Dead": "?",
+        "Died": "?",
         "Style": [],
         "wikiLink": "",
         "imslpLink": ""
@@ -152,16 +152,16 @@ class Composer_IO(File_IO, TextTools):
       orig_entry[dict_key] = new_val
     return orig_entry
   
-  def _updateComposerYears(self, orig_entry: dict, year_born='?', year_dead='?') -> dict:
+  def _updateComposerYears(self, orig_entry: dict, year_born='?', year_died='?') -> dict:
     year1 = str(year_born)
-    year2 = str(year_dead)
+    year2 = str(year_died)
     if not year1.isnumeric():
       year1 = "?"
     if not year2.isnumeric():
       year2 = "?"
     
     orig_entry["Born"] = year1
-    orig_entry["Dead"] = year2
+    orig_entry["Died"] = year2
 
     orig_entry["NameCodeStrong"] = orig_entry["NameCode"] \
                                  + "_" \
@@ -194,7 +194,7 @@ class Composer_IO(File_IO, TextTools):
     return orig_entry
   
   def _updateComposerImslpLink(self, orig_entry: dict, ismlp_link: str) -> dict:
-    orig_entry["ismlpLink"] = ismlp_link
+    orig_entry["imslpLink"] = ismlp_link
     return orig_entry
 
   def _getPartitionFilePath(self, name_code: str) -> str:
@@ -366,7 +366,7 @@ class Composer_IO(File_IO, TextTools):
 
       for jsonfile in self._getAllInfoJsonFilePath():
         for item in self.readJsonFileAsObj(self._INFO_DIR + jsonfile):
-          if item["Born"].isnumeric() and item["Dead"].isnumeric():
+          if item["Born"].isnumeric() and item["Died"].isnumeric():
             candidate_year = int(item[year_type])
             
             if candidate_year > from_year and candidate_year < to_year:
@@ -383,8 +383,8 @@ class Composer_IO(File_IO, TextTools):
   def queryByBornYearRange(self, year_low: str, year_high: str) -> list:
     return self._queryByYearRange(year_low, year_high, year_type='Born')
 
-  def queryByDeadYearRange(self, year_low: str, year_high: str) -> list:
-    return self._queryByYearRange(year_low, year_high, year_type='Dead')
+  def queryByDiedYearRange(self, year_low: str, year_high: str) -> list:
+    return self._queryByYearRange(year_low, year_high, year_type='Died')
   
   def isComposerInDB(self, name_code) -> bool:
     if not self.queryByNameCode(name_code):
@@ -393,11 +393,11 @@ class Composer_IO(File_IO, TextTools):
       return True
 
   def createComposerEntry(self, given_name: list, family_name: list, \
-                          born_year: str, dead_year: str, known_name='',
+                          born_year: str, died_year: str, known_name='',
                           style=[], wiki_link='', imlsp_link='') -> bool:
     try:
       entry = self._createNewInfoDict(given_name, family_name)
-      entry = self._updateComposerYears(entry, born_year, dead_year)
+      entry = self._updateComposerYears(entry, born_year, died_year)
       entry = self._updateComposerKnwonName(entry, known_name)
       entry = self._updateComposerStyle(entry, style)
       entry = self._updateComposerWikiLink(entry, wiki_link)
@@ -502,7 +502,7 @@ class Composer_IO(File_IO, TextTools):
       else:
         entry = query[0]
         if dkey in ["GivenNameList", "FamilyNameParticle", "FamilyNameList", 
-                    "NamePostfix", "NameCode", "NameCodeStrong", "Born","Dead"]:
+                    "NamePostfix", "NameCode", "NameCodeStrong", "Born","Died"]:
           raise Exception("cannot update, \"{}\" is a protected key".format(dkey))
         # only allow updating "safe" keys
         else:
