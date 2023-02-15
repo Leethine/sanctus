@@ -89,6 +89,13 @@ class Metadata_IO(File_IO, TextTools):
     else:
       raise("Key \"{}\" not available".format(dkey))
     return entry
+
+  def _updateEntryAddKey(self, entry: dict, dkey: str, new_val='') -> dict:
+    if dkey == "Type":
+      raise("Cannot update protected key \"Type\"")
+    else:
+      entry[dkey] = new_val
+    return entry
   
   def _addUpdateEntry(self, entry: dict, dkey: str, new_val='') -> dict:
     if dkey == "Type":
@@ -198,7 +205,7 @@ class Metadata_IO(File_IO, TextTools):
     
     return False
 
-  def updateItem(self, hashcode='0', dkey='', new_val='') -> bool:
+  def updateItem(self, hashcode='0', dkey='', new_val='', addkey=False) -> bool:
     first_letter = hashcode[0]
     filenames = [
       self._PIECE_DIR + first_letter + self.JSON_EXTENTION, 
@@ -206,7 +213,6 @@ class Metadata_IO(File_IO, TextTools):
       self._ARRANGEMENT_DIR + first_letter + self.JSON_EXTENTION,
       self._TEMPLATE_DIR + first_letter + self.JSON_EXTENTION
     ]
-
     try:
       for name in filenames:
         if os.path.exists(name):
@@ -215,7 +221,10 @@ class Metadata_IO(File_IO, TextTools):
           # search hashcode in json file
           for item in entry:
             if item["Hash"] == hashcode:
-              new_item = self._updateEntry(item, dkey=dkey, new_val=new_val)
+              if addkey:
+                new_item = self._updateEntryAddKey(item, dkey=dkey, new_val=new_val)
+              else:
+                new_item = self._updateEntry(item, dkey=dkey, new_val=new_val)
               entry.remove(item)
               entry.append(new_item)
           self.writeJsonFile(entry, name + "~")
@@ -224,10 +233,8 @@ class Metadata_IO(File_IO, TextTools):
 
     except RuntimeError as e:
       print("deleteItem(): Error: {}".format(e))
-      return False
     except Exception as excp:
       print("deleteItem(): Exception: {}".format(excp))
-      return False
     
     return False
 

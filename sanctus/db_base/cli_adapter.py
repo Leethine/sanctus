@@ -1,8 +1,8 @@
 import os
-from db_base.db_composer import Composer_IO
-from db_base.db_metadata import Metadata_IO
-from db_base.db_score import Score_IO
-
+from sanctus.db_base.db_composer import Composer_IO
+from sanctus.db_base.db_metadata import Metadata_IO
+from sanctus.db_base.db_score import Score_IO
+from sanctus.db_base.dbutils import TextTools
 """
 find composer [fmlyname, abbrname, year]
 find piece/arrangement/collection/template [title, opus, composer]
@@ -20,7 +20,11 @@ ls composer
 ls piece/collection/arrangement/template/all
 """
 
-class DataBaseCliAdapter():
+class DataBaseCliAdapterAbs:
+  def __init__(self) -> None:
+    pass
+
+class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
   def __init__(self, dbpath='~/') -> None:
     self.__c = Composer_IO(dbpath)
     self.__m = Metadata_IO(dbpath)
@@ -124,37 +128,160 @@ class DataBaseCliAdapter():
     return result
   
   def lsComposer(self) -> list:
-    result = []
+    return self.__c.queryAllComposer()
   
-  def lsWork(self, worktype: str) -> list:
+  def lsWork(self, worktype='') -> list:
     result = []
     criteria = self.__getCriteria(worktype)
     if criteria in ["piece", "pieces"]:
-      pass
+      result = self.__m.queryByType("piece")
+    
     elif criteria in ["collection", "collections"]:
-      pass
+      result = self.__m.queryByType("collection")
+    
     elif criteria in ["arrangement", "arrangements"]:
-      pass
+      result = self.__m.queryByType("arrangement")
+    
     elif criteria in ["template", "templates"]:
-      pass
+      result = self.__m.queryByType("template")
+    
+    elif criteria in ["all", ""]:
+      result = self.__m.queryByType("piece")
+      result += self.__m.queryByType("arrangement")
+      result += self.__m.queryByType("template")
+      result += self.__m.queryByType("collection")
     else:
       pass
+    return result
   
-  def findInteractive(self) -> dict:
-    pass
+  def addComposer(self,
+                  given_name_list: list,
+                  family_name_list: list,
+                  born_year: str,
+                  dead_year: str,
+                  known_as_name: str,
+                  style: list,
+                  wiki_link: str,
+                  imslp_link: str) -> bool:
+    return self.__c.createComposerEntry(
+      given_name=given_name_list, 
+      family_name=family_name_list,
+      born_year=born_year,
+      dead_year=dead_year,
+      known_name=known_as_name,
+      style=style,
+      wiki_link=wiki_link,
+      imlsp_link=imslp_link
+    )
   
-  def addComposerInteractive(self) -> bool:
-    pass
+  def addWork(self,
+              type_of_work: str,
+              title: str,
+              subtitle: str,
+              subsubtitle: str,
+              composer_name_code: str,
+              opus: str,
+              instrument_list: list) -> bool:
+    return self.__m.createItem(
+      type_of_work=type_of_work,
+      title=title,
+      subtitle=subsubtitle,
+      subsubtitle=subsubtitle,
+      composercode=composer_name_code,
+      opus=opus,
+      instruments=instrument_list
+    )
   
-  def addWorkInteractive(self) -> bool:
-    pass
+  def updateComposer(self, name_code: str, dkey: str, new_val) -> bool:
+    try:
+      if dkey == "Style":
+        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
+        newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
+        return self.__c.updateComposerEntry(name_code=name_code, dkey=dkey, new_val=newval_list)
+      
+      elif dkey == "Born":
+        year = str(int(new_val))
+        entry = self.__c.queryByNameCode(name_code)[0]
+        status = self.__c.deleteComposerForce(name_code)
+        self.createComposerEntry(
+          given_name=entry["GivenNameList"],
+          family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
+          born_year=year,
+          dead_year=entry["Dead"],
+          known_name=entry["KnownAs"],
+          style=entry["Style"],
+          wiki_link=entry["wikiLink"],
+          imlsp_link=entry["imslpLink"]
+        )
+      elif dkey == "Dead":
+        year = str(int(new_val))
+        entry = self.__c.queryByNameCode(name_code)[0]
+        status = self.__c.deleteComposerForce(name_code)
+        self.createComposerEntry(
+          given_name=entry["GivenNameList"],
+          family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
+          born_year=entry["Born"],
+          dead_year=year,
+          known_name=entry["KnownAs"],
+          style=entry["Style"],
+          wiki_link=entry["wikiLink"],
+          imlsp_link=entry["imslpLink"]
+        )
+      elif dkey == "FamilyNameList":
+        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
+        newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
+        self.createComposerEntry(
+          given_name=entry["GivenNameList"],
+          family_name=entry["FamilyNameParticle"]+newval_list,
+          born_year=entry["Born"],
+          dead_year=year,
+          known_name=entry["KnownAs"],
+          style=entry["Style"],
+          wiki_link=entry["wikiLink"],
+          imlsp_link=entry["imslpLink"]
+        )
+      elif dkey == "FamilyNameParticle":
+        self.createComposerEntry(
+          given_name=entry["GivenNameList"],
+          family_name=[new_val.lower()]+entry["FamilyNameList"],
+          born_year=entry["Born"],
+          dead_year=year,
+          known_name=entry["KnownAs"],
+          style=entry["Style"],
+          wiki_link=entry["wikiLink"],
+          imlsp_link=entry["imslpLink"]
+        )
+      elif dkey == "GivenNameList":
+        newval_list = new_val.replace(","," ").replace("-"," ").split(" ")
+        newval_list = self._capitalizeList(self._filterEmptyStrFromList(newval_list))
+        self.createComposerEntry(
+          given_name=newval_list,
+          family_name=entry["FamilyNameParticle"]+entry["FamilyNameList"],
+          born_year=entry["Born"],
+          dead_year=year,
+          known_name=entry["KnownAs"],
+          style=entry["Style"],
+          wiki_link=entry["wikiLink"],
+          imlsp_link=entry["imslpLink"]
+        )
+      elif dkey == "NameCode" or dkey == "NameCodeStrong":
+        raise Exception("update forbidden on \"NameCode\"")
+      else:
+        return self.__c.updateComposerEntryAddKey(name_code=name_code, dkey=dkey, new_val=year)
+      
+    except RuntimeError as e:
+      print("updateComposer(): Error - {}".format(e))
+    except Exception as e:
+      print("updateComposer(): Exception - {}".format(e))
+    return False
   
-  def updateComposerInteractive(self) -> bool:
-    pass
-  
-  def updatePieceInteractive(self) -> bool:
-    pass
+  def updateWork(self, hashcode: str, dkey: str, new_val) -> bool:
+    new_value = new_val
+    if dkey == "Instruments":
+      new_val_list = new_val.replace(","," ").replace("."," ").split(" ")
+      new_value = self._capitalizeList(self._filterEmptyStrFromList(new_val_list))
+    
+    return self.__m.updateItem(hashcode=hashcode, dkey=dkey, new_val=new_value, addkey=True)
 
 if __name__ == "__main__":
-  default_dbpath = os.path.abspath('~/Music/sanctus_db/data_v1')
-  cmd = DataBaseCliAdapter(default_dbpath)
+  pass

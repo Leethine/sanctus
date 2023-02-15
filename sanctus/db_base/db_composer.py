@@ -139,7 +139,8 @@ class Composer_IO(File_IO, TextTools):
         "Born": "?",
         "Dead": "?",
         "Style": [],
-        "wikiLink": ""
+        "wikiLink": "",
+        "imslpLink": ""
       }
       return new_entry
     except RuntimeError as e:
@@ -191,6 +192,10 @@ class Composer_IO(File_IO, TextTools):
   def _updateComposerWikiLink(self, orig_entry: dict, wiki_link: str) -> dict:
     orig_entry["wikiLink"] = wiki_link
     return orig_entry
+  
+  def _updateComposerImslpLink(self, orig_entry: dict, ismlp_link: str) -> dict:
+    orig_entry["ismlpLink"] = ismlp_link
+    return orig_entry
 
   def _getPartitionFilePath(self, name_code: str) -> str:
     if len(name_code) != 0:
@@ -211,6 +216,23 @@ class Composer_IO(File_IO, TextTools):
       else:
         list_json.append(f)
     return list_json
+
+  def queryAllComposer(self, dkey='') -> list:
+    try:
+      result = []
+      for jsonfile in self._getAllInfoJsonFilePath():
+        for item in self.readJsonFileAsObj(self._INFO_DIR + jsonfile):
+          if not dkey:
+            result.append(item)
+          else:
+            result.append(item[dkey])
+      return result
+    except RuntimeError as e:
+      print("queryAllComposer(): Error: {}".format(e))
+      return []
+    except Exception as excp:
+      print("queryAllComposer(): Exception: {}".format(excp))
+      return []
   
   def queryByNameCode(self, name_code: str) -> list:
     try:
@@ -371,14 +393,15 @@ class Composer_IO(File_IO, TextTools):
       return True
 
   def createComposerEntry(self, given_name: list, family_name: list, \
-                          born_year: str, dead_year: str, \
-                          known_name='', style=[], wiki_link='') -> bool:
+                          born_year: str, dead_year: str, known_name='',
+                          style=[], wiki_link='', imlsp_link='') -> bool:
     try:
       entry = self._createNewInfoDict(given_name, family_name)
       entry = self._updateComposerYears(entry, born_year, dead_year)
       entry = self._updateComposerKnwonName(entry, known_name)
       entry = self._updateComposerStyle(entry, style)
       entry = self._updateComposerWikiLink(entry, wiki_link)
+      entry = self._updateComposerImslpLink(entry, imlsp_link)
 
       # The partition is obtained by the first letter of family name
       jsonfile_path = self._getPartitionFilePath(entry["NameCode"])
@@ -456,8 +479,32 @@ class Composer_IO(File_IO, TextTools):
         if dkey not in entry.keys():
           raise Exception("updateComposerEntry(): {} is not a valid key".format(dkey))
         # only allow updating "safe" keys
-        elif dkey not in ['KnownAs', 'Style', 'wikiLink']:
+        elif dkey not in ['KnownAs', 'Style', 'wikiLink', 'imslpLink', 'OpusSystem']:
           raise Exception("Key \"{}\" is protected, cannot be updated".format(dkey))
+        else:
+          entry[dkey] = new_val
+          print("[INFO] Updated {}: {} = {}".format(name_code, dkey, new_val))
+          return True
+    except RuntimeError as e:
+      print("updateComposerEntry(): Error: {}".format(e))
+      return False
+    except Exception as excp:
+      print("updateComposerEntry(): Exception: {}".format(excp))
+      return False
+
+  def updateComposerEntryAddKey(self, name_code: str, dkey: str, new_val) -> bool:
+    try:
+      query = self.queryByNameCode(name_code)
+      if not query:
+        return False
+      elif len(query) > 1:
+        raise Exception("Multiple composers with the same NameCode exists in DB: {}".format(name_code))
+      else:
+        entry = query[0]
+        if dkey in ["GivenNameList", "FamilyNameParticle", "FamilyNameList", 
+                    "NamePostfix", "NameCode", "NameCodeStrong", "Born","Dead"]:
+          raise Exception("cannot update, \"{}\" is a protected key".format(dkey))
+        # only allow updating "safe" keys
         else:
           entry[dkey] = new_val
           print("[INFO] Updated {}: {} = {}".format(name_code, dkey, new_val))
