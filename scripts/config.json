@@ -1,0 +1,12 @@
+{
+  "mode": "local",                "__f1_comment__": "2 modes: local/server, the default is local mode",
+  "data-directory": "../data",    "__f2_comment__": "directory path to create DB, the DEFAULT is /tmp/sanctus",
+  "language": "en",               "__f3_comment__": "curentlt en only",
+  "editor": "nano",               "__f4_comment__": "server-side editor command",
+  "local-editor": "gedit",        "__f5_comment__": "local editor command, will be ignored in local mode",
+  "notation-system": "EN",        "__f6_comment__": "EN/LA/DE",
+  "engravor": "lilypond",         "__f7_comment__": "",
+  "version": "2.22.0",            "__f8_comment__": "",
+  "extension": ".ly",             "__f9_comment__": "",
+  "open-with-gui": "frescobaldi", "__f10_comment__": ""
+}
