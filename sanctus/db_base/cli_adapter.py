@@ -4,22 +4,6 @@ from sanctus.db_base.db_composer import Composer_IO
 from sanctus.db_base.db_metadata import Metadata_IO
 from sanctus.db_base.db_score import Score_IO
 from sanctus.db_base.dbutils import TextTools
-"""
-find composer [fmlyname, abbrname, year]
-find piece/arrangement/collection/template [title, opus, composer]
-
-add composer
-add piece/collection/arrangement/template
-
-rm composer
-rm piece/arrangement/collection/template
-
-update composer
-update piece/arrangement/collection/template
-
-ls composer
-ls piece/collection/arrangement/template/all
-"""
 
 class DataBaseCliAdapterAbs:
   def __init__(self) -> None:
