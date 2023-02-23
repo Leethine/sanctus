@@ -264,9 +264,11 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
   
   def updateWork(self, hashcode: str, dkey: str, new_val) -> bool:
     new_value = str(new_val)
+    
     if dkey == "Instruments":
+      # process list in case string is provided as input
       if type(new_val) == list:
-        pass
+        new_value = new_val
       else:
         new_val_list = str(new_val).replace(","," ").replace("."," ").split(" ")
         new_value = self._capitalizeList(self._filterEmptyStrFromList(new_val_list))
@@ -274,9 +276,28 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       print("[Error] <updateWork> \"Hash\" update is forbidden")
       return False
     else:
+      # no preprocessing
       pass
     
     return self.__m.updateItem(hashcode=hashcode, dkey=dkey, new_val=new_value, addkey=True)
+  
+  def getWorkPathByHash(self, hashcode: str) -> str:
+    workpath = self.__s.getScoreDirAbs(hashcode)
+    if os.path.exists(workpath):
+      return self.__s.getScoreDirAbs(hashcode)
+    else:
+      os.mkdir(workpath)
+      return self.__s.getScoreDirAbs(hashcode)
+  
+  def createScript(self, hashcode: str, extension='.ly', content='%---- ') -> bool:
+    return self.__s.createEngravingFile(hashcode, extension=extension, content=content)
+
+  def getWorkAsTar(self, hashcode: str) -> bytes:
+    return self.__s.getScorePackageAsRaw(hashcode)
+  
+  def updateWorkTar(self, hashcode: str, rawtar: bytes) -> bool:
+    return self.__s.uploadScorePackageAsRaw(hashcode, rawtar)
+
 
 if __name__ == "__main__":
   pass

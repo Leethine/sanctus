@@ -20,3 +20,7 @@ print(sio.getScoreDirAbs(op13_hashcode))
 print(sio.packScoreDir(op13_hashcode))
 
 sio.unpackScoreDir(op13_hashcode)
+
+rawtar = sio.getScorePackageAsRaw(op13_hashcode)
+sio.uploadScorePackageAsRaw(op13_hashcode, rawtar)
+sio.unpackScoreDir(op13_hashcode)
