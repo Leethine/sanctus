@@ -281,6 +281,32 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
     
     return self.__m.updateItem(hashcode=hashcode, dkey=dkey, new_val=new_value, addkey=True)
   
+  def addPieceToCollection(self, col_hash: str, piece_hash: str) -> bool:
+    if not self.__m.queryByHash(piece_hash):
+      print("[Warning] piece does not exist, nothing added")
+      return False
+    else:
+      return self.__m.addWorkInCollection(coll_hashcode=col_hash, new_work_hash=piece_hash)
+  
+  def addOriginalToArranged(self, orig_hash: str, arranged_hash: str) -> bool:
+    original = self.__m.queryByHash(orig_hash)
+    arranged = self.__m.queryByHash(arranged_hash)
+    if not original:
+      print("[Warning] original piece does not exist, nothing done")
+      return False
+    elif not arranged:
+      print("[Warning] arranged piece does not exist, nothing done")
+      return False
+    else:
+      # Take the first element by default
+      # in case of hash conflict, warning is given during query
+      original = original[0]
+      arranged = arranged[0]
+      return self.__m.updateItem(hashcode=arranged["Hash"],
+                                 dkey="OriginalHash",
+                                 new_val=original["Hash"],
+                                 addkey=True)
+  
   def getWorkPathByHash(self, hashcode: str) -> str:
     workpath = self.__s.getScoreDirAbs(hashcode)
     if os.path.exists(workpath):

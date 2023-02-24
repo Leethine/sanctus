@@ -51,7 +51,8 @@ class Metadata_IO(File_IO, TextTools):
       "Type": "arrangement",
       "Year": "",
       "Opus": "",
-      "Hash": ""
+      "Hash": "",
+      "OriginalHash": ""
     }
     return entry
 
@@ -414,4 +415,32 @@ class Metadata_IO(File_IO, TextTools):
       return result
     except Exception as excp:
       print("queryByType(): Exception: {}".format(excp))
+      return result
+
+  def queryByHash(self, hashcode: str) -> list:
+    result = []
+    filename = ""
+    try:
+      for dir_prefix in [self._PIECE_DIR, self._ARRANGEMENT_DIR, self._COLLECTION_DIR, self._TEMPLATE_DIR]:
+        for first_letter in self._getAllMetadataJsonFileName():
+          # get filename based on the input
+          filename = dir_prefix + first_letter + self.JSON_EXTENTION
+          
+          if os.path.exists(filename):
+            jsonobj = self.readJsonFileAsObj(filename)
+            for item in jsonobj:
+              if "Hash" in item.keys():
+                if hashcode.lower() == item["Hash"].lower():
+                  result.append(item)
+                  
+      if len(result) > 1:
+        print("[Warning] Hash conflict found: " + hashcode)
+      
+      return result
+
+    except RuntimeError as e:
+      print("queryByHash(): Error: {}".format(e))
+      return result
+    except Exception as excp:
+      print("queryByHash(): Exception: {}".format(excp))
       return result
