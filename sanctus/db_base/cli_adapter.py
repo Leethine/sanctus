@@ -102,11 +102,11 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
     elif criteria in ["fname", "familyname", "fmlyname", "fmname", "composer"]:
       for item in self.__c.queryByFamilyName(search_string):
         composer_code = item["NameCode"]
-        result = self.__m.queryByComposerCode(composer_code)
+        result += self.__m.queryByComposerCode(composer_code)
     elif criteria in ["abbrname", "composerabbrname", "composerabbr", "composername"]:
       for item in self.__c.queryByAbbrName(search_string):
         composer_code = item["NameCode"]
-        result = self.__m.queryByComposerCode(composer_code)
+        result += self.__m.queryByComposerCode(composer_code)
     else:
       print("Warning: Invalid search criteria \"{}\"".format(search_string))
     
@@ -264,9 +264,11 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
   
   def updateWork(self, hashcode: str, dkey: str, new_val) -> bool:
     new_value = str(new_val)
+    
     if dkey == "Instruments":
+      # process list in case string is provided as input
       if type(new_val) == list:
-        pass
+        new_value = new_val
       else:
         new_val_list = str(new_val).replace(","," ").replace("."," ").split(" ")
         new_value = self._capitalizeList(self._filterEmptyStrFromList(new_val_list))
@@ -274,9 +276,54 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       print("[Error] <updateWork> \"Hash\" update is forbidden")
       return False
     else:
+      # no preprocessing
       pass
     
     return self.__m.updateItem(hashcode=hashcode, dkey=dkey, new_val=new_value, addkey=True)
+  
+  def addPieceToCollection(self, col_hash: str, piece_hash: str) -> bool:
+    if not self.__m.queryByHash(piece_hash):
+      print("[Warning] piece does not exist, nothing added")
+      return False
+    else:
+      return self.__m.addWorkInCollection(coll_hashcode=col_hash, new_work_hash=piece_hash)
+  
+  def addOriginalToArranged(self, orig_hash: str, arranged_hash: str) -> bool:
+    original = self.__m.queryByHash(orig_hash)
+    arranged = self.__m.queryByHash(arranged_hash)
+    if not original:
+      print("[Warning] original piece does not exist, nothing done")
+      return False
+    elif not arranged:
+      print("[Warning] arranged piece does not exist, nothing done")
+      return False
+    else:
+      # Take the first element by default
+      # in case of hash conflict, warning is given during query
+      original = original[0]
+      arranged = arranged[0]
+      return self.__m.updateItem(hashcode=arranged["Hash"],
+                                 dkey="OriginalHash",
+                                 new_val=original["Hash"],
+                                 addkey=True)
+  
+  def getWorkPathByHash(self, hashcode: str) -> str:
+    workpath = self.__s.getScoreDirAbs(hashcode)
+    if os.path.exists(workpath):
+      return self.__s.getScoreDirAbs(hashcode)
+    else:
+      os.mkdir(workpath)
+      return self.__s.getScoreDirAbs(hashcode)
+  
+  def createScript(self, hashcode: str, extension='.ly', content='%---- ') -> bool:
+    return self.__s.createEngravingFile(hashcode, extension=extension, content=content)
+
+  def getWorkAsTar(self, hashcode: str) -> bytes:
+    return self.__s.getScorePackageAsRaw(hashcode)
+  
+  def updateWorkTar(self, hashcode: str, rawtar: bytes) -> bool:
+    return self.__s.uploadScorePackageAsRaw(hashcode, rawtar)
+
 
 if __name__ == "__main__":
   pass
