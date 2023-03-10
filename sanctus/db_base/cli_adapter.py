@@ -102,11 +102,11 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
     elif criteria in ["fname", "familyname", "fmlyname", "fmname", "composer"]:
       for item in self.__c.queryByFamilyName(search_string):
         composer_code = item["NameCode"]
-        result = self.__m.queryByComposerCode(composer_code)
+        result += self.__m.queryByComposerCode(composer_code)
     elif criteria in ["abbrname", "composerabbrname", "composerabbr", "composername"]:
       for item in self.__c.queryByAbbrName(search_string):
         composer_code = item["NameCode"]
-        result = self.__m.queryByComposerCode(composer_code)
+        result += self.__m.queryByComposerCode(composer_code)
     else:
       print("Warning: Invalid search criteria \"{}\"".format(search_string))
     
