@@ -1,5 +1,5 @@
 import os
-from constants import DEFAULT_DB_DIR_PATH
+from sanctus.constants import DEFAULT_DB_DIR_PATH
 from sanctus.db_base.db_composer import Composer_IO
 from sanctus.db_base.db_metadata import Metadata_IO
 from sanctus.db_base.db_score import Score_IO
@@ -176,7 +176,17 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       opus=opus,
       instruments=instrument_list
     )
-  
+    
+  def deleteComposer(self, name_code: str, force=True) -> bool:
+    try:
+      if force:
+        return self.__c.deleteComposerForce(name_code)
+      else:
+        return self.__c.deleteComposer(name_code)
+    except:
+      print("<deleteComposer> Deletion unsuccessful")
+      return False
+
   def updateComposer(self, name_code: str, dkey: str, new_val) -> bool:
     try:
       if dkey == "Style":
@@ -262,6 +272,13 @@ class DataBaseCliAdapter(DataBaseCliAdapterAbs, TextTools):
       print("updateComposer(): Exception - {}".format(e))
     return False
   
+  def deleteWork(self, hashcode: str) -> bool:
+    try:
+      return self.__m.deleteItem(hashcode)
+    except:
+      print("<deleteWork> Deletion unsuccessful")
+      return False
+
   def updateWork(self, hashcode: str, dkey: str, new_val) -> bool:
     new_value = str(new_val)
     
