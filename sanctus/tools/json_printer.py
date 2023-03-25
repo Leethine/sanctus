@@ -4,7 +4,7 @@ class JsonPrinter:
   def __init__(self) -> None:
     pass
   
-  def _checkKeys(self, jobj:dict, lkey: list) -> bool:
+  def _checkKeys(self, jobj: dict, lkey: list) -> bool:
     for k in lkey:
       if not k in jobj.keys():
         return False

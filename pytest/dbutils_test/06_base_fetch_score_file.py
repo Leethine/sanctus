@@ -1,4 +1,5 @@
 import os, sys
+sys.path.append('../..')
 sys.path.append('..')
 import setup_test
 
