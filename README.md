@@ -5,8 +5,8 @@ Sanctus (score library administration and corpus treatment utilities) is a set o
 
 ## Features
 - A minimalist database ✅
-- Command-line interface ⌛
-- Clent-server mode access 🕐
+- Command-line interface ✅
+- Clent-server mode access ⌛
 - Cloud deployment 🕐
 - Utilities 🕐
 

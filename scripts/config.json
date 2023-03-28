@@ -1,6 +1,6 @@
 {
   "mode": "local",                "__f1_comment__": "2 modes: local/server, the default is local mode",
-  "data-directory": "../data",    "__f2_comment__": "directory path to create DB, the DEFAULT is /tmp/sanctus",
+  "data-directory": "/tmp/data",    "__f2_comment__": "abs directory path to create DB, the DEFAULT is /tmp/sanctus",
   "language": "en",               "__f3_comment__": "curentlt en only",
   "editor": "nano",               "__f4_comment__": "server-side editor command",
   "local-editor": "gedit",        "__f5_comment__": "local editor command, will be ignored in local mode",
