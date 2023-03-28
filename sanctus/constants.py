@@ -19,6 +19,8 @@ ROOTPATH = "$ROOT"
 
 DB_NON_VALID_ERR = -2
 
+CONFIG_NON_VALID_ERR = -3
+
 # DB parition according to family name initial
 COMPOSER_NAME_PARTITION_MAP = {
   "a": "ac",
