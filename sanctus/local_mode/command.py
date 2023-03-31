@@ -59,7 +59,7 @@ class CommandLine():
         while True:
           selected = self.__MACRO_input("> Select an item [1-"+str(len(candidates))+"]: ")
           selected = int(re.sub('\D', '', selected)) - 1
-          if selected < len(candidates) and selected > 0:
+          if selected < len(candidates) and selected >= 0:
             return candidates[selected]
           else:
             self.__MACRO_print(str(selected) + " is out of range, please select again!")
