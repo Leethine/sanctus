@@ -1,0 +1,23 @@
+# Put in the composer's first and last name.
+# The name should be the best known name, as shown in IMSLP.
+# Do not use abbriviation.
+LastName: 
+FirstName: 
+# Composer's full name
+FullName: 
+# Born Year - Died Year
+Years: 
+
+# The following are optional:
+
+# The name that you would like call the composer
+Alias: 
+# Composer's style or tags
+Tags: 
+# Opus system if any
+OpusSystem: 
+# Links to fetch contents from the Internet
+WikiLink: 
+ImslpLink: 
+# Unique code to identify the composer
+Code: 

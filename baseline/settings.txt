@@ -1,0 +1,3 @@
+DBPATH : $PWD/db_test
+EDITOR : nano
+ENGRAVER : lilypond

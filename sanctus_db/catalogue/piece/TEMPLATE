@@ -1,0 +1,22 @@
+# Mandatory, title
+Title: 
+
+# Mandatory if exists
+Composer: 
+Opus: 
+
+# Not mandatory, recommended
+Subtitle: 
+Subsubtitle: 
+Dedication: 
+ComposedYear: 
+
+# Not mandatory, recommended
+Editor: 
+Edition: 
+EditedYear: 
+Engraver: 
+# Provide a list of instrument, separated by comma
+Instrument: 
+# Level is rated from 1 - 10 
+Level: 
