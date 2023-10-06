@@ -9,8 +9,8 @@ use lib dirname (__FILE__);
 
 # Sanctus modules
 use LoadSetting;
-use CatalogueAction;
-use CatalogueKeeper;
+use CatalogueUtils;
+use Catalogue;
 
 # Load settings
 LoadSetting::Load;

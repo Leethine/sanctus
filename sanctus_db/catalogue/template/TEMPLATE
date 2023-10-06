@@ -1,7 +1,7 @@
-# Mandatory, title
+# Mandatory field
 Title: 
 
-# Not mandatory, recommended
+# Optional field:
 Subtitle: 
 Subsubtitle: 
 
@@ -12,4 +12,9 @@ Editor:
 Edition: 
 EditedYear: 
 Engraver: 
+
+# Provide a list of instrument, separated by comma
 Instrument: 
+
+# Unique hash code to be generated
+Code: 

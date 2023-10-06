@@ -1,22 +1,27 @@
-# Mandatory, title
+# Mandatory field
 Title: 
 
-# Mandatory if exists
+# If applicable:
 Composer: 
 Opus: 
 
-# Not mandatory, recommended
+# Optional field
 Subtitle: 
 Subsubtitle: 
 Dedication: 
 ComposedYear: 
 
-# Not mandatory, recommended
+# Optional field
 Editor: 
 Edition: 
 EditedYear: 
 Engraver: 
+
 # Provide a list of instrument, separated by comma
 Instrument: 
+
 # Level is rated from 1 - 10 
 Level: 
+
+# Unique hash code to be generated
+Code: 
