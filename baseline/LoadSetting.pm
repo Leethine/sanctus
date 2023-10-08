@@ -27,7 +27,7 @@ sub Load {
         my $val = $pair[1] =~ s/\s//gr;
         $val =~ s|\$PWD|$pwd|;
         $val =~ s|\$HOME|$home|;
-        $Settings{$key} = $val if (defined $key and defined $val);
+        $Settings{$key} = $val if (defined $key and defined $val and $key ne "" and $val ne "");
       }
       close(FH);
     }
