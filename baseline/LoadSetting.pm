@@ -30,6 +30,7 @@ sub Load {
         $Settings{$key} = $val if (defined $key and defined $val and $key ne "" and $val ne "");
       }
       close(FH);
+      last;
     }
   }
 }

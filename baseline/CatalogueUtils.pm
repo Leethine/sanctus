@@ -82,8 +82,10 @@ sub _get_file_md5 {
 sub _assert_type {
   my $type = shift;
   unless ($type ~~ ["composer", "piece", "collection", "arrangement", "template"]) {
-    die "Type $type not valid";
+    print STDERR "Type $type not valid";
+    return 0;
   }
+  return 1;
 }
 
 # Verify catalogue file, return false if not valid 
@@ -102,5 +104,43 @@ sub _verify_catalogue_file {
   }
   return $status;
 }
+
+# Prompt the user for choice
+# Given the hash of "Name" : "Path"
+# Return the path of cat file
+sub _prompt_for_choice {
+  my $choice_hash = shift;
+
+  my $count = 0;
+  my @key_names;
+  for (keys %$choice_hash) {
+    $count += 1;
+    print STDOUT "[", $count, "] ", $_, "\n";
+    push(@key_names, $_);
+  }
+  if ($count == 1) {
+    print STDOUT "Your choice [1]: ";
+    my $mychoice = <STDIN>;
+    return $choice_hash->{$key_names[0]};
+  }
+  else {
+    print STDOUT "Your choice [1-$count]: ";
+    my $mychoice = <STDIN> =~ s/\s//gr;
+    unless ($mychoice =~ /^\d+$/) {
+      print STDERR "Invalid input!\n";
+      return 0;
+    } else {
+      if ($mychoice > 0 and $mychoice < $count + 1) {
+        print("hzher");
+        return $choice_hash->{$key_names[$mychoice-1]};
+      } else {
+        print STDERR "Invalid choice (out of range)\n";
+        return 0;
+      }
+    }
+  }
+}
+
+
 
 1;
