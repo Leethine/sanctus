@@ -19,13 +19,18 @@ my $mode = lc(shift);
 my $type = lc(shift);
 my $keyword = lc(shift);
 
-if ($mode eq "insert") {
+if ($mode eq "add") {
+  Catalogue::Insert($type, $mysettings);
+}
+elsif ($mode eq "insert") {
   Catalogue::Insert($type, $mysettings);
 }
 elsif ($mode eq "find") {
-  print Catalogue::Find($type, $keyword, $mysettings);
+  Catalogue::ActionAndOption("find", $type, $keyword, $mysettings);
 }
-elsif ($mode eq "display") {
-  print Catalogue::Display($type, $keyword, $mysettings);
+elsif ($mode eq "findall") {
+  Catalogue::ActionAndOption("list", $type, "list all", $mysettings);
 }
-#CatalogueAction::Insert("Composer", \%LoadSetting::Settings);
+else {
+  print STDERR "Invalid option: $mode \n";
+}

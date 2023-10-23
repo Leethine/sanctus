@@ -97,6 +97,24 @@ sub Find {
   return @result;
 }
 
+# List all index by type
+# arg1: type (composer/piece/arrrangement/template)
+# arg2: Setting hash ref
+sub List {
+  my $ls_type = lc(shift);
+  my $settings = shift;
+  my $dbpath = $settings->{'DBPATH'} or die "DBPATH not defined";
+
+  CatalogueUtils::_assert_type($ls_type) or die "Assertion failed!";
+  my @files = glob("$dbpath/sanctus_db/catalogue/$ls_type/*.cat");
+  my @result;
+  for (@files) {
+    my $filename = "$_";
+    push(@result, $filename);
+  }
+  return @result;
+}
+
 # Typeless search, work only
 # arg1: keyword
 # arg2: Setting hash ref
@@ -104,30 +122,61 @@ sub Find {
 sub Search {
   my $keyword_str = lc(shift);
   my $settings = shift;
-  my @keywords = qw($keyword_str);
+  my @keywords_title = qw($keyword_str);
+  my @keywords_name = qw($keyword_str);
   my $dbpath = $settings->{'DBPATH'} or die "DBPATH not defined";
 
   my @arrangement_files = glob("$dbpath/sanctus_db/catalogue/arrangement/*.cat");
   my @collection_files = glob("$dbpath/sanctus_db/catalogue/collection/*.cat");
   my @piece_files = glob("$dbpath/sanctus_db/catalogue/piece/*.cat");
   my @template_files = glob("$dbpath/sanctus_db/catalogue/template/*.cat");
+
+  my @composer_files = glob("$dbpath/sanctus_db/catalogue/composer/*.cat");
+  my @work_files = push(@arrangement_files, @collection_files, @piece_files, @template_files);
   my @result;
 
-  # Match pieces
-  for (@piece_files) {
+  # Match composer first
+  for (@composer_files) {
     my $filename = "$_";
     my %catalogue = CatalogueUtils::_read_cat_file($filename);
-    # TODO continue here
+    foreach (@keywords_name) {
+      my $match = TextMatching::match_composer_name($catalogue{'FirstName'}, $catalogue{'LastName'}, $_);
+      # Separate the list, make two lists by composer name and work title
+      shift(@keywords_title) if $match;
+      shift(@keywords_name) if ! $match;
+    }
   }
+
+  #TODO continue here
 }
 
-sub FindAndOption {
+# Run a soubroutine (find, list, ...) and get all found results
+# Prompt the user with list of choices
+# arg1: action
+# arg2: type to find
+# arg3: keyword (can be a random string if not needed)
+# arg4: setting hash, passed by ref
+sub ActionAndOption {
+  my $action = lc(shift);
   my $find_type = lc(shift);
   my $keyword_str = lc(shift);
   my $settings = shift;
   
-  my @found = Find($find_type, $keyword_str, $settings);
+  my @found;
+  if ($action eq "find") {
+    @found = &Find($find_type, $keyword_str, $settings);
+  } elsif ($action eq "list") {
+    @found = &List($find_type, $settings);
+  } else {
+    print STDERR qq/Invalild action "$action"\n/;
+  }
   my %candidates;
+
+  if (!@found) {
+    print(qq/No $find_type found for keyword "$keyword_str"\n/);
+    return 0;
+  }
+
   foreach (@found) {
     my $filename = "$_";
     my %catfile = CatalogueUtils::_read_cat_file($filename);
@@ -137,10 +186,12 @@ sub FindAndOption {
     $candidates{$name} = $filename;
   }
   my $choice = CatalogueUtils::_prompt_for_choice(\%candidates);
-  print STDOUT "Option [d/del/u/h]: ";
+  return 0 unless $choice;
+
+  print STDOUT "Option [p/del/u/h]: ";
   my $option = <STDIN> =~ s/\s//gr;
-  if ($option eq "d") {
-    my %catfile = CatalogueUtils::_read_cat_file($choice);
+  if ($option eq "p") {
+    my %catfile = CatalogueUtils::_read_cat_file($choice) or die "Failed to read. ";
     foreach (keys %catfile) {
       print($_, ": ", $catfile{$_}, "\n");
     }
@@ -154,7 +205,9 @@ sub FindAndOption {
     print("Hash: ", $catfile{'Code'}, "\n");
   } else {
     print STDERR "Invalid option!\n";
+    return 0;
   }
+  return 1;
 }
 
 1;

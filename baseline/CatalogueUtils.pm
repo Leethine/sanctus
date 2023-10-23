@@ -81,11 +81,14 @@ sub _get_file_md5 {
 # Assert the validity of insertion/update/delete type
 sub _assert_type {
   my $type = shift;
-  unless ($type ~~ ["composer", "piece", "collection", "arrangement", "template"]) {
-    print STDERR "Type $type not valid";
-    return 0;
+
+  my $asserted = 0;
+  foreach ("composer", "piece", "collection", "arrangement", "template") {
+    my $typename = $_;
+    $asserted = 1 if ($type eq $typename);
   }
-  return 1;
+  print STDERR qq /Type "$type" not valid!\n/ unless $asserted;
+  return $asserted;
 }
 
 # Verify catalogue file, return false if not valid 
@@ -131,7 +134,6 @@ sub _prompt_for_choice {
       return 0;
     } else {
       if ($mychoice > 0 and $mychoice < $count + 1) {
-        print("hzher");
         return $choice_hash->{$key_names[$mychoice-1]};
       } else {
         print STDERR "Invalid choice (out of range)\n";
