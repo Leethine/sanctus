@@ -59,5 +59,11 @@ foreach (Catalogue::Find("Composer", "J S Bach", \%LoadSetting::Settings)) {
 #print TextMatching::match_composer_name("Johann Sebastian", "Bach", "J. S. Bach");
 ';
 
-print("\n### Test case 6 ###\n");
-Catalogue::FindAndOption("Composer", "J S Bach", \%LoadSetting::Settings);
+#print("\n### Test case 6 ###\n");
+#Catalogue::FindAndOption("Composer", "J S Bach", \%LoadSetting::Settings);
+
+print("\n### Test case 7 ###\n");
+
+foreach (CatalogueUtils::_find_dir('baseline','/home/lizian/')) {
+  print $_, "\n";
+}

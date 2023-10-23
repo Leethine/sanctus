@@ -28,7 +28,7 @@ elsif ($mode eq "insert") {
 elsif ($mode eq "find") {
   Catalogue::ActionAndOption("find", $type, $keyword, $mysettings);
 }
-elsif ($mode eq "findall") {
+elsif ($mode eq "list") {
   Catalogue::ActionAndOption("list", $type, "list all", $mysettings);
 }
 else {

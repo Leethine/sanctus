@@ -2,6 +2,7 @@ package CatalogueUtils;
 
 use strict;
 use warnings;
+use File::Find;
 use Digest::MD5::File qw( file_md5_hex );
 
 my $LEVEL = 1;
@@ -143,6 +144,19 @@ sub _prompt_for_choice {
   }
 }
 
-
+sub _find_dir {
+  our $name = shift;
+  my $directory = shift;
+  
+  our @result_dir;
+  sub findfiles {
+    my $filename = $File::Find::dir;
+    if (-d $filename and $filename =~ /\/$name$/) {
+      push(@result_dir, $filename);
+    }
+  }
+  find({wanted => \&findfiles,}, $directory);
+  return @result_dir;
+}
 
 1;

@@ -55,7 +55,7 @@ sub Insert {
   }
   
   # Write to catalogue file
-  $entryname =~ s/\s/"-"/g;
+  $entryname =~ s/\s/\-/g;
   my $new_file = $filepath . lc($entryname) . "_" . $md5chopped . ".cat";
   CatalogueUtils::_write_cat_file_field('Code', $md5full, $cache_file);
   system("mv", $cache_file, $new_file) == 0 or die "File conflict detected: $new_file";
@@ -89,9 +89,11 @@ sub Find {
     }
     else {
       my $title = $catalogue{'Title'};
+      #my $opus = $catalogue{'Opus'}; #TODO
+
       my $keyword_str_ = $keyword_str =~ s/^\s|\s$//gr;
       $keyword_str_ =~ s/\s{2,}/ /g;
-      push(@result, $filename) if ($keyword_str_ eq $title);
+      push(@result, $filename) if ($title =~ /$keyword_str_/i);
     }
   }
   return @result;
@@ -161,6 +163,7 @@ sub ActionAndOption {
   my $find_type = lc(shift);
   my $keyword_str = lc(shift);
   my $settings = shift;
+  my $dbpath = $settings->{'DBPATH'} or die "DBPATH not defined";
   
   my @found;
   if ($action eq "find") {
@@ -188,22 +191,42 @@ sub ActionAndOption {
   my $choice = CatalogueUtils::_prompt_for_choice(\%candidates);
   return 0 unless $choice;
 
-  print STDOUT "Option [p/del/u/h]: ";
+  # Choose options: p(rint) del(ete) u(pdate) open
+  print STDOUT "Option [p/del/u/open]: ";
   my $option = <STDIN> =~ s/\s//gr;
   if ($option eq "p") {
-    my %catfile = CatalogueUtils::_read_cat_file($choice) or die "Failed to read. ";
+    my %catfile = CatalogueUtils::_read_cat_file_ignore_missing($choice) or die "Failed to read. ";
     foreach (keys %catfile) {
-      print($_, ": ", $catfile{$_}, "\n");
+      print STDOUT $_, ": ", $catfile{$_}, "\n";
     }
-  } elsif ($option eq "del") {
+  }
+  elsif ($option eq "del") {
     system('rm', $choice) == 0 or die "Failed to delete: $choice\n";
-  } elsif ($option eq "u") {
+  }
+  elsif ($option eq "u") {
     system($CMD_TEXTEDITOR, $choice) == 0 or die "Failed to update: $choice\n";
-  } elsif ($option eq "h") {
+  }
+  elsif ($option eq "open") {
     my %catfile = CatalogueUtils::_read_cat_file($choice);
-    #TODO path
-    print("Hash: ", $catfile{'Code'}, "\n");
-  } else {
+    my $hash = $catfile{'Code'};
+
+    if ($find_type eq "composer") {
+      print STDOUT "Code: ", $hash, "\n";
+    }
+    else {
+      my $path = "$dbpath/sanctus_db/partition/$find_type";
+      my @results = CatalogueUtils::_find_dir($hash, $path);
+      my $location;
+      if (!@results) {
+        system('mkdir', '-p', "$path"."/"."$hash") == 0 or die "Failed to create directory!\n";
+        $location = "$path"."/"."$hash";
+      } else {
+        $location = $results[0];
+      }
+      print STDOUT "Location: ", $location, "\n";
+    }
+  }
+  else {
     print STDERR "Invalid option!\n";
     return 0;
   }
