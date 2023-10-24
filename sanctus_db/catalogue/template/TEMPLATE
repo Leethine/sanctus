@@ -1,0 +1,23 @@
+# Mandatory field
+Title: 
+
+# Optional field:
+Subtitle: 
+Subsubtitle: 
+
+Dedication: 
+Composer: 
+
+Editor: 
+Edition: 
+EditedYear: 
+Engraver: 
+
+# Provide a list of instrument, separated by comma
+Instrument: 
+
+# Unique hash code to be generated
+Code: 
+
+# Composer code
+ComposerCode: 

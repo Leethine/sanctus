@@ -1,0 +1,34 @@
+# Mandatory field
+Title: 
+
+# If applicable
+Composer: 
+Arranger: 
+Opus: 
+ComposedYear: 
+ArrangedYear: 
+
+# Optional field
+Subtitle: 
+Subsubtitle: 
+Dedication: 
+
+# Optional field
+Editor: 
+Edition: 
+EditedYear: 
+Engraver: 
+
+# Provide a list of instrument, separated by comma
+ForInstrument: 
+OriginalInstrument: 
+
+# Level is rated from 1 - 10 
+Level: 
+
+# Unique hash code to be generated
+Code: 
+
+# Composer and arranger code
+ComposerCode: 
+ArrangerCode: 
