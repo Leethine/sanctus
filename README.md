@@ -1,14 +1,15 @@
 <img src="./icon.svg" alt="Sanctus Logo" width="80%" height="80%">
 
 # sanctus
-Sanctus (score library administration and corpus treatment utilities) is a set of tools for classical music engraving score library management.
+Sanctus (score library administration and corpus treatment utilities) is a set of command tools for classical music engraving score library management.
 
 ## Features
 - A minimalist database ✅
-- DB management utilities ✅
-- Command-line interface ✅
-- Graphical interface ⌛
-- Interface withother programs 🕐
+- Command-line interface (Linux/Unix) ✅
+- DB management utilities ⌛
+- Web deployment, automation 🕐
+- Graphical interface 🕐
+- Musical analysis utilities 🕐
 - Text processing utilities 🕐
 
 ## Documentation
