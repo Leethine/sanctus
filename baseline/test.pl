@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# THIS TESTING FILE IS FOR TEMPORARY USE ONLY
+
 # Global loads
 use strict;
 use warnings;
