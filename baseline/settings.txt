@@ -1,3 +1,0 @@
-DBPATH : $HOME/Music/dbtest
-EDITOR : nano
-ENGRAVER : lilypond

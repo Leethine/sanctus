@@ -5,3 +5,5 @@ __dbtest/
 __db_test/
 
 *.log
+*.test
+test
