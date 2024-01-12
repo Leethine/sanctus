@@ -9,6 +9,13 @@ CREATE TABLE composers (
   diedyear INTEGER
 );
 
+-- Table to store composers "active" year --
+DROP TABLE IF EXISTS composers_mid_year;
+CREATE TABLE composers_mid_year (
+  id INTEGER,
+  year_mid INTEGER
+);
+
 -- Table to store collections --
 DROP TABLE IF EXISTS collections;
 CREATE TABLE collections (

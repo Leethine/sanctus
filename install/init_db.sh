@@ -31,6 +31,6 @@ sqlite3 "${DBPATH}/sanctus.db" <<EOF
 $(cat ${SQL_SCRIPT})
 EOF
 
-echo "${SANCTUS_DB}" >> sanctusenv
 export SANCTUS_DB="${DBPATH}/sanctus.db"
+echo "export SANCTUS_DB=${SANCTUS_DB}" >> sanctusenv
 echo "DB created at: ${DBPATH}/sanctus.db"

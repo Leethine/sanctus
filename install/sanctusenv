@@ -1,2 +1,2 @@
-/home/lizian/.local/share/sanctus_fs
-/home/lizian/.local/share/sanctus_db/sanctus.db
+export SANCTUS_FS=/home/lizian/.local/share/sanctus_fs
+export SANCTUS_DB=/home/lizian/.local/share/sanctus_db/sanctus.db

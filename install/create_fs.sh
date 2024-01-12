@@ -27,7 +27,7 @@ fi
 echo ""
 rm -fr "${FSPATH}/sanctus_fs"
 mkdir -p "${FSPATH}/sanctus_fs"
-echo "${FSPATH}/sanctus_fs" >> sanctusenv
+echo "export SANCTUS_FS=${FSPATH}/sanctus_fs" >> sanctusenv
 
 cd "${FSPATH}/sanctus_fs"
 

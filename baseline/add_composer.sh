@@ -93,24 +93,35 @@ LASTNAME="$(echo "$LASTNAME" | tr -s ' ')"
 KNOWNASNAME="$(echo "$KNOWNASNAME" | tr -s ' ')"
 
 # 5. Check if composer already existed
-EXIST=$(./find_composer.sh -l "${LASTNAME}" -f "${FIRSTNAME}" --id-only)
-if [[ ! -z "${EXIST}" && -z "${ALLOW_DUPLICATE}" ]]; then
-  echo "Composer already existed, if you are sure, please use --allow-duplicate"
+EXISTED=$(./find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --check-exist-only)
+if [[ ! -z "${EXISTED}" && ${EXISTED} =~ '^[0-9]+$' && -z "${ALLOW_DUPLICATE}" ]]; then
+  echo "Composer already existed, if you are sure to create, please use --allow-duplicate"
   exit 0;
 fi
 
-# 6. Run SQL script
+# 6. Run SQL script to insert into composer table
 sqlite3 "${SANCTUS_DB}" <<EOF
 INSERT INTO composers (firstname, lastname, knownas_name, bornyear, diedyear)
 VALUES('${FIRSTNAME}','${LASTNAME}','${KNOWNASNAME}','${BORNYEAR}','${DIEDYEAR}');
 EOF
 
-# 7. Log the inserted data
+# 7. Calculate composer active year and insert into composers_mid_year table
+if [[ ! ${BORNYEAR} -eq -1 && ! ${DIEDYEAR} -eq -1 ]]; then
+  YEAR_MID=$(((${BORNYEAR}+${DIEDYEAR})/2))
+  COMPOSER_ID=$(./find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --id-only)
+
+sqlite3 "${SANCTUS_DB}" <<EOF
+  INSERT INTO composers_mid_year (id, year_mid)
+  VALUES(${COMPOSER_ID},${YEAR_MID});
+EOF
+fi
+
+# 8. Log the inserted data
 if [ -z ${NO_OUTPUT} ]; then
-echo "Added composer in ${SANCTUS_DB}"
-echo "Last name: ${LASTNAME}"
-echo "First name: ${FIRSTNAME}"
-echo "Known as: ${KNOWNASNAME}"
-echo "Born year: ${BORNYEAR_STR}"
-echo "Died year: ${DIEDYEAR_STR}"
+  echo "Added composer in ${SANCTUS_DB}"
+  echo "Last name: ${LASTNAME}"
+  echo "First name: ${FIRSTNAME}"
+  echo "Known as: ${KNOWNASNAME}"
+  echo "Born year: ${BORNYEAR_STR}"
+  echo "Died year: ${DIEDYEAR_STR}"
 fi
