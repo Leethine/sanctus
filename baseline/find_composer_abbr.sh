@@ -1,8 +1,21 @@
 #!/bin/bash
 
+HELPMSG="$(basename ${0}) ABBRNAME [--pretty-display|--id-only|--csv-display] [--check-duplication]
+Find composer by abbreviated name."
+
+## PRINT HELP
+if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+  echo "${HELPMSG}"
+  exit 0;
+fi
+
 if [[ -z "${SANCTUS_DB}" ]]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;
+fi
+
+if [ -z "${SCRIPT_DIR}" ]; then
+  SCRIPT_DIR="."
 fi
 
 # 1. Parse arguments
@@ -19,6 +32,9 @@ elif [[ "${2}" == "--id-only" ]]; then
   DISPLAY_FORMAT="-csv"
 elif [[ "${2}" == "--csv-display" ]]; then
   SELECT_COLUMNS="*"
+  DISPLAY_FORMAT="-csv"
+elif [[ "${2}" == "--check-duplication" ]]; then
+  SELECT_COLUMNS="COUNT(*)"
   DISPLAY_FORMAT="-csv"
 else
   SELECT_COLUMNS="*"
@@ -44,7 +60,7 @@ for LINE in ${QUERY_RESULT}; do
   CANDIDATE_FIRSTNAME="$(echo "${CANDIDATE_KNOWNASNAME}" | sed s/"_${LASTNAME}"//g)"
   CANDIDATE_LASTNAME="${LASTNAME}"
   SEARCH_ABBRNAME="$(echo ${ABBR_NAME} | tr ' ' '_')"
-  ISMATCH=$(../toolbox/match_name_abbr.pl ${CANDIDATE_FIRSTNAME} ${CANDIDATE_LASTNAME} ${SEARCH_ABBRNAME})
+  ISMATCH=$(${SCRIPT_DIR}/../toolbox/match_name_abbr.pl ${CANDIDATE_FIRSTNAME} ${CANDIDATE_LASTNAME} ${SEARCH_ABBRNAME})
   if [[ ${ISMATCH} -eq 1 ]]; then
     MATCHFOUND=1
     break;

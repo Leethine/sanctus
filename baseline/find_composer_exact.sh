@@ -1,5 +1,14 @@
 #!/bin/bash
 
+HELPMSG="$(basename ${0}) -l LASTNAME | -n KNOWNAS [--simple-display|--pretty-display|--csv-display|--id-only|--check-exist-only]
+Find composer by last name or full known-as name."
+
+## PRINT HELP
+if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+  echo "${HELPMSG}"
+  exit 0;
+fi
+
 if [ -z "${SANCTUS_DB}" ]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;

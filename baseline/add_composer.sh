@@ -1,8 +1,21 @@
 #!/bin/bash
 
+HELPMSG="$(basename ${0}) -f FIRSTNAME -l LASTNAME -n KNOWN_AS -b BORN -d DIED [--allow-duplicate] [--quiet]
+Add new composer in DB."
+
+## PRINT HELP
+if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+  echo "${HELPMSG}"
+  exit 0;
+fi
+
 if [ -z "${SANCTUS_DB}" ]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;
+fi
+
+if [ -z "${SCRIPT_DIR}" ]; then
+  SCRIPT_DIR="."
 fi
 
 # 1. Process arguments
@@ -93,7 +106,7 @@ LASTNAME="$(echo "$LASTNAME" | tr -s ' ')"
 KNOWNASNAME="$(echo "$KNOWNASNAME" | tr -s ' ')"
 
 # 5. Check if composer already existed
-EXISTED=$(./find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --check-exist-only)
+EXISTED=$(${SCRIPT_DIR}/find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --check-exist-only)
 if [[ ! -z "${EXISTED}" && ${EXISTED} =~ '^[0-9]+$' && -z "${ALLOW_DUPLICATE}" ]]; then
   echo "Composer already existed, if you are sure to create, please use --allow-duplicate"
   exit 0;
@@ -108,7 +121,7 @@ EOF
 # 7. Calculate composer active year and insert into composers_mid_year table
 if [[ ! ${BORNYEAR} -eq -1 && ! ${DIEDYEAR} -eq -1 ]]; then
   YEAR_MID=$(((${BORNYEAR}+${DIEDYEAR})/2))
-  COMPOSER_ID=$(./find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --id-only)
+  COMPOSER_ID=$(${SCRIPT_DIR}/find_composer_exact.sh -l "${LASTNAME}" -n "${KNOWNASNAME}" --id-only)
 
 sqlite3 "${SANCTUS_DB}" <<EOF
   INSERT INTO composers_mid_year (id, year_mid)
