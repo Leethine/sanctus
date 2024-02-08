@@ -50,7 +50,7 @@ QUERY_RESULT="$(sqlite3 -readonly -csv "${SANCTUS_DB}" <<EOF
 EOF
 )"
 
-# 3. Match known as name with abbr name, stop the for loop when match is found
+# 3. Match known-as name with abbr name, stop the for loop when match is found
 IFS=$'\n'
 MATCHFOUND=0
 for LINE in ${QUERY_RESULT}; do

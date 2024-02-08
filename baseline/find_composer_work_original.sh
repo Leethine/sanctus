@@ -119,8 +119,11 @@ SEARCH_COND=""
 if [[ ! -z "${TITLE}" ]]; then
   SEARCH_COND="${SEARCH_COND}"" title LIKE '%${TITLE}%' COLLATE NOCASE "
 fi
-if [[ ! -z "${OPUS}" ]]; then
+if [[ ! -z "${OPUS}" && ! -z "${TITLE}" ]]; then
   SEARCH_COND="${SEARCH_COND}"" AND opus LIKE '%${OPUS}%' COLLATE NOCASE "
+fi
+if [[ ! -z "${OPUS}" && -z "${TITLE}" ]]; then
+  SEARCH_COND="${SEARCH_COND}"" opus LIKE '%${OPUS}%' COLLATE NOCASE "
 fi
 
 # 5. Switch usecases
