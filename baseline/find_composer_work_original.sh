@@ -3,6 +3,12 @@
 HELPMSG="$(basename ${0}) [-t TITLE | -o OPUS] [-l LASTNAME | -n KNOWN_NAME | -i COMPOSER_ID] [--simple-display|--pretty-display|--csv-display]
 Find composer works"
 
+## PRINT HELP
+if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+  echo "${HELPMSG}"
+  exit 0;
+fi
+
 if [ -z "${SANCTUS_DB}" ]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;
@@ -85,7 +91,7 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 # 2. If composer's ID is given, use the id
 if [[ ! -z "${COMPOSER_ID}" ]]; then
   COMPOSER_ID=$(sqlite3 -csv "${SANCTUS_DB}" <<EOF
-  SELECT id FROM composers WHERE id IS ${COMPOSER_ID};
+  SELECT id FROM composers WHERE id IS ${COMPOSER_ID} ;
 EOF
   )
   HASCOMPOSER="Y"
@@ -130,7 +136,7 @@ if [[ ! -z "${OPUS}" && -z "${TITLE}" ]]; then
 fi
 
 # 5. Switch usecases
-if [[ ! -z "${SEARCH_COND}" ]]; then
+if [[ ! -z "${SEARCH_COND}" && "${HASCOMPOSER}" != "N" ]]; then
   # no AND if no search condition given
   SEARCH_COND="${SEARCH_COND} AND "
 fi
@@ -161,8 +167,7 @@ elif [[ "${HASCOMPOSER}" == "N" ]]; then
 # No composer provided
 sqlite3 "${DISPLAY_FORMAT}" "${SANCTUS_DB}" <<EOF
 SELECT ${SELECT_COLUMNS} FROM pieces
-WHERE ${SEARCH_COND}
-;
+WHERE ${SEARCH_COND} ;
 EOF
 
 else

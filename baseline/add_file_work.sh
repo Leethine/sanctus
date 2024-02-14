@@ -32,10 +32,10 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    #--arranged)
-    #  ARRANGED="Y"
-    #  shift # past argument
-    #  ;;
+    --arranged)
+      ARRANGED="Y"
+      shift # past argument
+      ;;
     --quiet)
       NO_OUTPUT="Y"
       shift # past argument
@@ -60,10 +60,21 @@ if [[ -z "${PIECE_ID}" ]]; then
 fi
 
 # 3. Check if piece exists
-PIECE_TITLE="$(sqlite3 -readonly -csv "${SANCTUS_DB}" <<EOF
-  SELECT title FROM pieces WHERE id = ${PIECE_ID};
+if [[ "${ARRANGED}" == "Y" ]]; then
+  ISARRANGED=1
+  PIECE_TITLE="$(sqlite3 -readonly -csv "${SANCTUS_DB}" <<EOF
+    SELECT title FROM arranged_pieces WHERE id = ${PIECE_ID};
 EOF
 )"
+
+else
+  ISARRANGED=0
+  PIECE_TITLE="$(sqlite3 -readonly -csv "${SANCTUS_DB}" <<EOF
+    SELECT title FROM pieces WHERE id = ${PIECE_ID};
+EOF
+)"
+fi
+
 if [[ -z "${PIECE_TITLE}" ]]; then
   echo "Piece ID: ${PIECE_ID} does not exist."
   exit 0;
@@ -91,8 +102,9 @@ fi
 
 sqlite3 ${SANCTUS_DB} <<EOF
   INSERT INTO files
-  (piece_id, file_number, file_name, extension, folder_hash, comment)
+  (piece_id, is_arranged, file_number, file_name, extension, folder_hash, comment)
   VALUES
-  (${PIECE_ID},${NEW_FILE_NUMBER},'${FILENAME}_${NEW_FILE_NUMBER}.${EXTENSION}',
+  (${PIECE_ID},${ISARRANGED},${NEW_FILE_NUMBER},'${FILENAME}_${NEW_FILE_NUMBER}.${EXTENSION}',
   '${EXTENSION}','${SHA1HASH}','${COMMENT}');
 EOF
+

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+HELPMSG="$(basename ${0}) -t TITLE [-s SUBTITLE -x SUBSUBTITLE -o OPUS -i INSTRUMENT] [-c COMPOSER_ID | -n KNOWN_NAME | -a ABBR_NAME]
+Add composer work (original)"
+
+## PRINT HELP
+if [[ "${1}" == "-h" || "${1}" == "--help" ]]; then
+  echo "${HELPMSG}"
+  exit 0;
+fi
+
 if [ -z "${SANCTUS_DB}" ]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;
@@ -96,9 +105,18 @@ else
 fi
 
 # 4. Check duplicity
-#if [[ "${ALLOW_DUPLICATE}" != "Y" ]]; then
-# TBD
-#fi
+if [[ "${ALLOW_DUPLICATE}" != "Y" ]]; then
+  FOUND="$(sqlite3 -csv "${SANCTUS_DB}" <<EOF
+  SELECT id FROM pieces WHERE
+  composer_id = ${COMPOSER_ID} AND
+  title = '${TITLE}' AND
+  opus = '${OPUS}' ;
+EOF
+)"
+  if [[ ! -z "${FOUND}" ]]; then
+    echo "Duplicated piece found: ${FOUND}"
+  fi
+fi
 
 # 5. Insert to DB
 sqlite3 "${SANCTUS_DB}" <<EOF
