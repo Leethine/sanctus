@@ -89,7 +89,9 @@ elif [[ ! -z "${COMPOSER_ABBRNAME}" && -z "${COMPOSER_KNOWNASNAME}" ]]; then
     COMPOSER_ID=$(${SCRIPT_DIR}/find_composer_abbr.sh "${COMPOSER_ABBRNAME}" --id-only)
   fi
 else
-  echo "Warning: homeless work ${TITLE} ${OPUS} (No assiciated composer)"
+  if [[ "${NO_OUTPUT}" != "Y" ]]; then
+    echo "Warning: homeless work ${TITLE} ${OPUS} (No assiciated composer)"
+  fi
   COMPOSER_ID=-1
 fi
 
@@ -106,4 +108,12 @@ sqlite3 "${SANCTUS_DB}" <<EOF
   '${SUBTITLE}','${SUBSUBTITLE}','${OPUS}','${INSTRUMENT}');
 EOF
 
-echo "Inserted work."
+COMPOSER="$(sqlite3 -readonly "${SANCTUS_DB}" <<EOF
+  SELECT knownas_name FROM composers
+  WHERE id IS ${COMPOSER_ID};
+EOF
+)"
+
+if [[ "${NO_OUTPUT}" != "Y" ]]; then
+  echo "Inserted work: ${TITLE} - ${OPUS} (${COMPOSER})"
+fi

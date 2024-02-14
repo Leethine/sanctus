@@ -62,13 +62,13 @@ CREATE TABLE arranged_pieces (
 -- Table to store actual files --
 DROP TABLE IF EXISTS files;
 CREATE TABLE files (
-  file_number INTEGER PRIMARY KEY AUTOINCREMENT,
-  file_hash TEXT NOT NULL,
-  file_name TEXT NOT NULL,
   piece_id INTEGER,
   is_arranged BOOLEAN DEFAULT 0,
-  format TEXT,
+  file_number INTEGER,
+  file_name TEXT NOT NULL,
+  extension TEXT,
+  folder_hash TEXT NOT NULL,
+  comment TEXT,
   creation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modification_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  comment TEXT
+  last_modification_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

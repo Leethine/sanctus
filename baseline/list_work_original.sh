@@ -59,6 +59,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
 # 2. List work by composer's by last name
 if [[ ! -z "${LASTNAME}" ]]; then
   ID_COND=""

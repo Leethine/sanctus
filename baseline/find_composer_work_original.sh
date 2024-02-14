@@ -1,5 +1,8 @@
 #!/bin/bash
 
+HELPMSG="$(basename ${0}) [-t TITLE | -o OPUS] [-l LASTNAME | -n KNOWN_NAME | -i COMPOSER_ID] [--simple-display|--pretty-display|--csv-display]
+Find composer works"
+
 if [ -z "${SANCTUS_DB}" ]; then
   echo "Error: DB file is not defined, please set the variable \$SANCTUS_DB"
   exit 1;
@@ -105,7 +108,7 @@ else
     fi
   elif [[ ! -z ${COMPOSER_LASTNAME} && -z ${COMPOSER_KNOWNASNAME} ]]; then
     COMPOSER_IDS="$(${SCRIPT_DIR}/find_composer_exact.sh -l "${COMPOSER_LASTNAME}" --id-only)"
-    if [[ ! -z "${COMPOSER_ID}" ]]; then
+    if [[ ! -z "${COMPOSER_IDS}" ]]; then
       HASCOMPOSER="M"
     fi
   else
@@ -127,12 +130,17 @@ if [[ ! -z "${OPUS}" && -z "${TITLE}" ]]; then
 fi
 
 # 5. Switch usecases
+if [[ ! -z "${SEARCH_COND}" ]]; then
+  # no AND if no search condition given
+  SEARCH_COND="${SEARCH_COND} AND "
+fi
+
 if [[ "${HASCOMPOSER}" == "Y" ]]; then
 # Only one composer provided
 sqlite3 "${DISPLAY_FORMAT}" "${SANCTUS_DB}" <<EOF
 SELECT ${SELECT_COLUMNS} FROM pieces
 WHERE ${SEARCH_COND}
-AND composer_id IS '${COMPOSER_ID}';
+composer_id IS '${COMPOSER_ID}';
 EOF
 
 elif [[ "${HASCOMPOSER}" == "M" ]]; then
@@ -146,9 +154,7 @@ elif [[ "${HASCOMPOSER}" == "M" ]]; then
 sqlite3 "${DISPLAY_FORMAT}" "${SANCTUS_DB}" <<EOF
 SELECT ${SELECT_COLUMNS} FROM pieces
 WHERE ${SEARCH_COND}
-AND (
-  ${ID_COND}
-)
+( ${ID_COND} )
 EOF
 
 elif [[ "${HASCOMPOSER}" == "N" ]]; then
