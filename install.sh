@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Testing only, not in production 
+# Customize path to store the data
+if [[ -z ${SANCTUS_DATAPATH} ]]; then
+  echo "env variable SANCTUS_DATAPATH not set"
+fi
 
-#rm -fr $HOME/Music/dbtest/sanctus_db
-#cp -r sanctus_db $HOME/Music/dbtest
+cp database/schema.sql ${SANCTUS_DATAPATH}
 
-mkdir -p $HOME/.local/lib/sanctus
-rm -fr $HOME/.local/lib/sanctus/baseline
-cp -r baseline $HOME/.local/lib/sanctus
+database/init-db.sh
 
-cp -f sanctus $HOME/.local/bin
+echo ""
+echo "Installation done."

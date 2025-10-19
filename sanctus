@@ -1,8 +1,0 @@
-#!/bin/bash
-if [ "$#" -eq 3 ] ; then
-  perl $HOME/.local/lib/sanctus/baseline/sanctus_db.pl $1 $2 $3
-elif [ "$#" -eq 2 ] ; then
-  perl $HOME/.local/lib/sanctus/baseline/sanctus_db.pl $1 $2 "Sanctus"
-else
-  echo "Invalid arguments!"
-fi
