@@ -1,14 +1,25 @@
 #!/bin/bash
 
+# Check env
 if [ -z "${SANCTUS_DATAPATH}" ]; then
   echo "env variable SANCTUS_DATAPATH not defined"
   exit 1
 fi
+if [ -z "${SANCTUS_DB}" ]; then
+  DBFILE="${SANCTUS_DATAPATH}/tables.db"
+else
+  DBFILE="${SANCTUS_DB}"
+fi
+if [ -z "${SANCTUS_FS}" ]; then
+  FSPATH="${SANCTUS_DATAPATH}/files"
+else
+  FSPATH="${SANCTUS_FS}"
+fi
 
-DBFILE="${SANCTUS_DATAPATH}/tables.db"
+
 COLLECTION_CODE="${1}"
 FORCE="${2}"
-FSPATH="${SANCTUS_DATAPATH}/files"
+
 
 EXISTING="$(sqlite3 -readonly -csv "${DBFILE}" <<EOF
   SELECT code FROM collections WHERE

@@ -1,13 +1,22 @@
 #!/bin/bash
 
+# Check env
 if [ -z "${SANCTUS_DATAPATH}" ]; then
   echo "env variable SANCTUS_DATAPATH not defined"
   exit 1
 fi
+if [ -z "${SANCTUS_DB}" ]; then
+  DBFILE="${SANCTUS_DATAPATH}/tables.db"
+else
+  DBFILE="${SANCTUS_DB}"
+fi
+if [ -z "${SANCTUS_FS}" ]; then
+  FSPATH="${SANCTUS_DATAPATH}/files"
+else
+  FSPATH="${SANCTUS_FS}"
+fi
 
-DBFILE="${DATAPATH}/tables.db"
-FSPATH="${DATAPATH}/files"
-
+# Parge args
 while [[ $# -gt 0 ]]; do
   case ${1} in
     --piece)

@@ -1,10 +1,20 @@
 #!/bin/bash
 
+# Check env
 if [ -z "${SANCTUS_DATAPATH}" ]; then
   echo "env variable SANCTUS_DATAPATH not defined"
   exit 1
 fi
-SANCTUS_DATAPATH="${SANCTUS_DATAPATH}/tables.db"
+if [ -z "${SANCTUS_DB}" ]; then
+  DBFILE="${SANCTUS_DATAPATH}/tables.db"
+else
+  DBFILE="${SANCTUS_DB}"
+fi
+if [ -z "${SANCTUS_FS}" ]; then
+  FSPATH="${SANCTUS_DATAPATH}/files"
+else
+  FSPATH="${SANCTUS_FS}"
+fi
 
 firstname="${1}"
 lastname="${2}"
